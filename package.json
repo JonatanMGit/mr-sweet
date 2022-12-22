@@ -22,9 +22,8 @@
   "homepage": "https://github.com/JonatanMGit/mr-sweet#readme",
   "dependencies": {
     "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
-  },
-  "devDependencies": {
+    "dotenv": "^16.0.3",
     "@faker-js/faker": "^7.6.0"
-  }
+  },
+  "devDependencies": {}
 }
