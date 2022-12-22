@@ -3,7 +3,7 @@
 Mr Sweet is a discord bot that is intended to replace other bots in sweets server.
 
 ## Features
-
+Completely AI generated Code + Human Fixes
 Real
 
 - [x] Moderation
