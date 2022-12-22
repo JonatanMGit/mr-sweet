@@ -4,9 +4,8 @@ const fs = require('fs');
 //register every slash command in the commands folder
 const commands = [];
 const commandFiles = fs.readdirSync('src/commands').filter(file => file.endsWith('.js'));
-
+console.log("Starting to register commands");
 for (const file of commandFiles) {
-    console.log(file);
     const command = require(`./commands/${file}`);
     commands.push(command.data.toJSON());
 }
@@ -18,7 +17,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.token);
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
         const data = await rest.put(
-            Routes.applicationGuildCommands("913920242739187773", "813852446069751838"),
+            Routes.applicationGuildCommands("1043905318867980530", "813852446069751838"),
             { body: commands },
         );
 
