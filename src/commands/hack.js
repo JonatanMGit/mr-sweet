@@ -9,10 +9,11 @@ module.exports = {
         .addBooleanOption(option => option.setName('verbose').setDescription('Whether to show more hacked data').setRequired(false)),
     async execute(interaction) {
         const user = interaction.options.getUser('user');
-        console.log(user)
         // create a discord timestamp
-        await interaction.reply(`Hacking ${user.username} in <t:${Math.floor((Date.now() + offset) / 1000)}:R>`);
+        await interaction.reply(`Hacking ${user.username} <t:${Math.floor((Date.now() + offset - 10) / 1000)}:R>`);
         // wait 1 minute
+
+
         setTimeout(async () => {
             // edit the message to look like this
             // User: <@!user id>
@@ -53,9 +54,20 @@ Favorite Food: ${faker.commerce.productName()}
 Favorite Animal: ${faker.animal.dog()}
             `};
 
-            await interaction.editReply({
-                content: content
-            });
+            try {
+                await interaction.editReply({
+                    content: content
+                });
+            } catch (error) {
+                // check if the error is DiscordAPIError[10008]: Unknown Message
+                // if it is, then the message was deleted
+
+                if (error === 'DiscordAPIError[10008]: Unknown Message') {
+                    // do nothing
+                } else {
+                    console.error(error);
+                }
+            }
         }, offset);
 
     },
