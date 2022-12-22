@@ -1,0 +1,26 @@
+{
+  "name": "mr-sweet",
+  "version": "1.0.0",
+  "description": "Mr Sweet yay",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonatanMGit/mr-sweet.git"
+  },
+  "keywords": [
+    "discord"
+  ],
+  "author": "Sweets Server, Joe Owner",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/JonatanMGit/mr-sweet/issues"
+  },
+  "homepage": "https://github.com/JonatanMGit/mr-sweet#readme",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3"
+  }
+}
