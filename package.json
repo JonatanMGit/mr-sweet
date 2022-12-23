@@ -1,6 +1,6 @@
 {
   "name": "mr-sweet",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Mr Sweet yay",
   "main": "src/index.js",
   "scripts": {
