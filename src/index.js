@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
 require('dotenv').config();
 const fs = require('fs');
 const path = require('node:path');
@@ -47,3 +47,4 @@ client.once(Events.ClientReady, () => {
 });
 
 client.login(process.env.TOKEN);
+//ooggagaga
