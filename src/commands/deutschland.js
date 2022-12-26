@@ -330,6 +330,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         // respond with the correct hymne using the subcommand name as the variable
         // if the user is in a vc then join the voice channel
+        /*
         const Player = createAudioPlayer();
         var gtts = new gTTS(eval(subcommand), 'en');
         gtts.save('./src/commands/hymne.mp3')
@@ -350,7 +351,7 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-
+*/
 
         await interaction.reply(eval
             (subcommand));
