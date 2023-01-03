@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('node:path');
 const { registerCommands, loadCommands } = require('./commandUtils.js');
 
+
 client.commands = new Collection();
 
 // reload commands
@@ -33,3 +34,7 @@ client.once(Events.ClientReady, () => {
 
 client.login(process.env.TOKEN);
 //ooggagaga
+
+if (process.env.web === 'true') {
+    require('./web.js');
+}
