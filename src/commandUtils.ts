@@ -23,8 +23,9 @@ function loadCommands(client) {
 
 function registerCommands(client) {
     //register every slash command in the commands folder
+    const commandsPath = path.join(__dirname, 'commands');
     const commands = [];
-    const commandFiles = fs.readdirSync('src/commands').filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
     console.log("Starting to register commands");
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);

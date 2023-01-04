@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@trongnd/ts-nodemon": "^1.0.3",
+    "@types/node": "^18.11.18",
     "copyfiles": "^2.4.1",
     "cpx": "^1.5.0",
     "node-fetch": "^2.6.7",
