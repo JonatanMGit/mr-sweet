@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { SlashCommandBuilder } from '@discordjs/builders';
 const Markov = require('js-markov');
 var markov = new Markov();
 module.exports = {

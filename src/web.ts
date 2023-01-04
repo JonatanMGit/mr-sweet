@@ -1,6 +1,6 @@
 const express = require('express');
 const exp = require('constants');
-const fetch = require('node-fetch');
+import * as fetch from 'node-fetch';
 
 // express setup
 const app = express();

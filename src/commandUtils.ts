@@ -1,8 +1,8 @@
 // Load all commands from the commands folder
-const fs = require('fs');
-const path = require('node:path');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v10');
+import * as fs from 'fs';
+import * as path from 'path';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
 
 function loadCommands(client) {
     const commandsPath = path.join(__dirname, 'commands');
@@ -41,7 +41,7 @@ function registerCommands(client) {
                 Routes.applicationGuildCommands("1043905318867980530", "813852446069751838"),
                 { body: commands },
             );
-
+            // @ts-ignore
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);
         } catch (error) {
             console.error(error);

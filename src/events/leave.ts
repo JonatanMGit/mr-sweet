@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+import { Events } from 'discord.js';
 
 module.exports = {
     // send a message to the channel 1051064356026187846 when a user leaves

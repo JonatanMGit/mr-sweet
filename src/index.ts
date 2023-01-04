@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] });
 require('dotenv').config();
-const fs = require('fs');
+import * as fs from 'fs';
 const path = require('node:path');
 const { registerCommands, loadCommands } = require('./commandUtils.js');
 

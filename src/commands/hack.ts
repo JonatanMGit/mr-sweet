@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { faker } = require('@faker-js/faker')
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { faker } from '@faker-js/faker';
 const offset = 30000;
 module.exports = {
     data: new SlashCommandBuilder()
@@ -35,7 +35,7 @@ module.exports = {
             // Discord login token: (This is the base64 of the user id)
 
             // generate random data for each field using faker
-            content = `User: <@!${user.id}>
+            let content = `User: <@!${user.id}>
 IP: ${faker.internet.ip()}
 Password: ${faker.internet.password()}
 Email: ${faker.internet.email()}
