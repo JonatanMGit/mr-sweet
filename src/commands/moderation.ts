@@ -14,7 +14,7 @@ module.exports = {
         .addStringOption(option => option.setName('input').setDescription('The input to check').setRequired(true))
         .addBooleanOption(option => option.setName('verbose').setDescription('If the output should be verbose').setRequired(false))
         .addBooleanOption(option => option.setName('private').setDescription('If the output should be private').setRequired(false)),
-    async execute(interaction: CommandInteraction) {
+    async execute(interaction) {
         const input = interaction.options.getString('input');
         const verbose = interaction.options.getBoolean('verbose');
         const sendprivate = interaction.options.getBoolean('private');
