@@ -31,7 +31,8 @@
     "express": "^4.18.2",
     "ffmpeg-static": "^5.1.0",
     "gtts": "^0.1.1",
-    "js-markov": "^3.0.3"
+    "js-markov": "^3.0.3",
+    "openai": "^3.1.0"
   },
   "devDependencies": {
     "@trongnd/ts-nodemon": "^1.0.3",
