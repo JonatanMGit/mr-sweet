@@ -10,7 +10,7 @@ const openai = new OpenAIApi(configuration);
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('moderation')
-        .setDescription('Detects if an input is inapropriate')
+        .setDescription('Detects if an input is inappropriate')
         .addStringOption(option => option.setName('input').setDescription('The input to check').setRequired(true))
         .addBooleanOption(option => option.setName('verbose').setDescription('If the output should be verbose').setRequired(false))
         .addBooleanOption(option => option.setName('private').setDescription('If the output should be private').setRequired(false)),
@@ -26,7 +26,7 @@ module.exports = {
         for (const key in data.category_scores) {
             data.category_scores[key] = parseFloat(data.category_scores[key].toFixed(2));
         }
-        const message = `The input \`${input}\` is ${data.flagged ? 'inapropriate' : 'apropriate'}`;
+        const message = `The input \`${input}\` is ${data.flagged ? 'inappropriate' : 'appropriate'}`;
         if (verbose) {
             await interaction.reply(message + `\`\`\`json
 ${JSON.stringify(data, null, 2)}

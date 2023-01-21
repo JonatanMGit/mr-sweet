@@ -32,7 +32,7 @@ function registerCommands(client) {
         commands.push(command.data.toJSON());
     }
 
-    const rest = new REST({ version: '10' }).setToken(process.env.token);
+    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
     (async () => {
         try {
