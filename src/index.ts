@@ -8,10 +8,14 @@ const { registerCommands, loadCommands } = require('./commandUtils.js');
 
 client.commands = new Collection();
 
-// reload commands
-registerCommands(client);
-loadCommands(client);
+// make it async so that the bot can already start while the commands are being registered
+(async () => {
 
+    // reload commands
+    registerCommands(client);
+    loadCommands(client);
+
+})();
 // Handle events
 
 const eventsPath = path.join(__dirname, 'events');
