@@ -35,13 +35,12 @@
     "openai": "^3.1.0"
   },
   "devDependencies": {
-    "@trongnd/ts-nodemon": "^1.0.3",
+    "@trongnd/ts-nodemon": "^1.0.0",
     "@types/node": "^18.11.18",
     "copyfiles": "^2.4.1",
     "cpx": "^1.5.0",
     "node-fetch": "^2.6.7",
     "nodemon": "^2.0.20",
-    "tsc": "^2.0.4",
     "typescript": "^4.9.4"
   }
 }
