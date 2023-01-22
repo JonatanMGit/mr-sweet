@@ -11,6 +11,19 @@ export type User = {
     id: string,
     refresh_token: string
 }
+export type Settings = {
+    enabled_commands: string[],
+    enabled_events: string[],
+}
+
+
+
+export type Guild = {
+    id: string,
+    name: string,
+    icon: string,
+    settings: Settings
+}
 
 
 // create the user table
@@ -64,3 +77,30 @@ export const getUsers = async () => {
     const users = await User.findAll();
     return users;
 }
+
+export const getUser = async (id) => {
+    sequelize.sync();
+    const user
+        = await User.findOne({
+            where: {
+                id: id,
+            }
+        });
+    return user;
+}
+
+export const deleteUser = async (id) => {
+
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        user.destroy();
+    }
+}
+
+
