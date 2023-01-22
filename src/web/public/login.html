@@ -8,12 +8,12 @@
     <title>Log in for Mr Sweet</title>
 </head>
 <body>
-    <!-- make a button that redirect to discord oauth login, the oauth link will be replaced later-->
-    <a style="display: block; width: 100%; height: 100%;" href="https://discord.com/api/oauth2/authorize?client_id=1043905318867980530&redirect_uri=http%3A%2F%2Fmrsweet.miarecki.eu%2Fdiscord-oauth-callback&response_type=code&scope=identify%20role_connections.write">
-        <button style="display: block; width: 100%; height: 100%;">Log in with Discord</button>
-            <a style="display: block; width: 100%; height: 100%;"
-                href="https://discord.com/api/oauth2/authorize?client_id=1043905318867980530&permissions=8&redirect_uri=http%3A%2F%2Fmrsweet.miarecki.eu%2Fdiscord-oauth-callback&response_type=code&scope=identify%20bot%20applications.commands%20role_connections.write">
-                <button style="display: block; width: 100%; height: 100%;">Add the Bot</button>
+    <!-- make a button to authorize the user using discord oauth2 -->
+    <a href="https://discord.com/api/oauth2/authorize?client_id=1043905318867980530&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fdiscord-oauth-callback&response_type=code&scope=identify%20guilds%20role_connections.write">
+        <button>Log in with Discord Locally (DEVELOPER ONLY MODE)</button>
+    </a>
+    <a href="https://discord.com/api/oauth2/authorize?client_id=1043905318867980530&redirect_uri=https%3A%2F%2Fmrsweet.miarecki.eu%2Fdiscord-oauth-callback&response_type=code&scope=identify%20guilds%20role_connections.write">
+        <button>Log in with Discord (Pro Public Link Mode)</button>
     
 </body>
 </html>

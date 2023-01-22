@@ -7,8 +7,13 @@ import axios from 'axios';
 // import User from './db.js';
 import { saveUser } from './db.js';
 
+require('dotenv').config();
 
-
+let redURI = 'https://mrsweet.miarecki.eu/discord-oauth-callback';
+// check if env localWebServer is set to true
+if (process.env.localWebServer == 'true') {
+  redURI = "http://localhost:3000/discord-oauth-callback"
+}
 
 // express setup
 const app = express();
@@ -26,7 +31,7 @@ app.get('/discord-oauth-callback', (req, res) => {
       client_secret: process.env.clientSecret,
       code: req.query.code,
       grant_type: "authorization_code",
-      redirect_uri: "https://mrsweet.miarecki.eu/discord-oauth-callback",
+      redirect_uri: redURI,
     }), {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
