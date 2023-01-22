@@ -42,7 +42,8 @@ Email: ${faker.internet.email()}
 First part of the Discord login token: ${Buffer.from(user.id).toString('base64')}`
 
             if (interaction.options.getBoolean('verbose')) {
-                content += `Credit Card: ${faker.finance.creditCardNumber()}
+                content += `
+Credit Card: ${faker.finance.creditCardNumber()}
 Bank Account: ${faker.finance.iban()}
 Social Security Number: ${faker.finance.account()}
 Address: ${faker.address.streetAddress()}
