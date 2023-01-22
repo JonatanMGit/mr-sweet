@@ -8,23 +8,23 @@ const url = `https://discord.com/api/v10/applications/${process.env.clientId}/ro
 // supported types: number_lt=1, number_gt=2, number_eq=3 number_neq=4, datetime_lt=5, datetime_gt=6, boolean_eq=7
 const body = [
     {
-        key: 'commits',
-        name: 'Useful Commits',
-        description: 'Has the user made a useful commit to mr sweet?',
+        key: 'contribution',
+        name: 'Contributor',
+        description: 'Is the user a contributor to mr sweet?',
         type: 7,
     },
     {
         key: 'atjemobile',
-        name: 'Seen ATJEMobile',
+        name: 'Seen Atjemobile',
         description: 'Has the user seen ATJEMobile?',
         type: 7,
     },
     {
-        key: 'bakingsince',
-        name: 'Baking Since',
-        description: 'Days since baking their first cookie',
-        type: 6,
-    },
+        key: 'premium',
+        name: 'Premium User',
+        description: 'Has the user purchased Mr Sweet premium?',
+        type: 7,
+    }
 ];
 (async () => {
     const response = await fetch(url, {
