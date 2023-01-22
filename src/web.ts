@@ -1,6 +1,14 @@
 const express = require('express');
-const exp = require('constants');
-import * as fetch from 'node-fetch';
+// Cannot redeclare block-scoped variable 'fetch'
+// const fetch = require('node-fetch');
+// you can fix this by using import instead of require
+import axios from 'axios';
+
+// import User from './db.js';
+import { saveUser } from './db.js';
+
+
+
 
 // express setup
 const app = express();
@@ -11,46 +19,47 @@ app.use(express.static("src/web/public"));
 
 // listen to /discord-oauth-callback and save the code and redirect to dashboard
 app.get('/discord-oauth-callback', (req, res) => {
-    console.log(req.query.code);
+
+  if (req.query.code) {
+    axios.post("https://discord.com/api/oauth2/token", new URLSearchParams({
+      client_id: process.env.clientId,
+      client_secret: process.env.clientSecret,
+      code: req.query.code,
+      grant_type: "authorization_code",
+      redirect_uri: "https://mrsweet.miarecki.eu/discord-oauth-callback",
+    }), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    }).then(res => {
+      // check if scopes are correct
+      if (res.data.scope !== 'role_connections.write guilds identify') {
+        console.log("Scopes are not correct");
+        console.log(res.data.scope);
+      }
+      const refresh_token = res.data.refresh_token;
+      // console.log(res.data);
+      axios.get("https://discord.com/api/users/@me", {
+        headers: {
+          authorization: `${res.data.token_type} ${res.data.access_token}`,
+        },
+      }).then(res => {
+        // console.log(res.data.id);
+        // add user to database
+        saveUser(res.data.id, refresh_token)
+      });
+    });
     res.redirect("/dashboard");
-    if (req.query.code) {
-
-
-        fetch("https://discord.com/api/oauth2/token", {
-            method: "POST",
-            body: new URLSearchParams({
-                client_id: process.env.clientId,
-                client_secret: process.env.clientSecret,
-                code: req.query.code,
-                grant_type: "authorization_code",
-                redirect_uri: "http://mrsweet.miarecki.eu/discord-oauth-callback",
-            }),
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }).then(res => res.json())
-            .then(response => {
-                console.log(response);
-                fetch("https://discord.com/api/users/@me", {
-                    headers: {
-                        authorization: `${response.token_type} ${response.access_token}`,
-                    },
-                })
-                    .then(res => res.json())
-                    .then(response => {
-                        console.log(response);
-                    });
-            });
-    }
+  }
 });
 
 
 app.get('/dashboard', (req, res) => {
-    res.send("Hi there!")
+  res.send("Hi there!")
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Example app listening at http://localhost:${port}`);
 });
 
 /*

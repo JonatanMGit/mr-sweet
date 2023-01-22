@@ -3,7 +3,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 require('dotenv').config();
 import * as fs from 'fs';
 const path = require('node:path');
-const { registerCommands, loadCommands } = require('./commandUtils.js');
+import { loadCommands, registerCommands } from './commandUtils';
 
 
 client.commands = new Collection();
@@ -14,6 +14,7 @@ client.commands = new Collection();
     // reload commands
     registerCommands(client);
     loadCommands(client);
+
 
 })();
 // Handle events

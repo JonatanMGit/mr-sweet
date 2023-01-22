@@ -4,7 +4,7 @@ import * as path from 'path';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
-function loadCommands(client) {
+export function loadCommands(client) {
     const commandsPath = path.join(__dirname, 'commands');
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
@@ -21,7 +21,7 @@ function loadCommands(client) {
     }
 }
 
-function registerCommands(client) {
+export function registerCommands(client) {
     //register every slash command in the commands folder
     const commandsPath = path.join(__dirname, 'commands');
     const commands = [];
