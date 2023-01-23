@@ -39,7 +39,3 @@ client.once(Events.ClientReady, () => {
 
 client.login(process.env.TOKEN);
 //ooggagaga
-
-if (process.env.web === 'true') {
-    require('./web.js');
-}
