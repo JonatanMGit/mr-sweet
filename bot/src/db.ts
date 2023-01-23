@@ -103,4 +103,57 @@ export const deleteUser = async (id) => {
     }
 }
 
+// create the guild table
+export const Guild = sequelize.define('Guild', {
+    // Model attributes are defined here
+    id: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        primaryKey: true
+    }
+});
+
+export const saveGuild = async (id) => {
+    sequelize.sync();
+    // check if guild already exists in the database with the same id and update refresh token if yes
+
+    const prevGuild
+        = await Guild
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (prevGuild) {
+        console.log("Guild already exists in database");
+        return;
+    }
+    // create a new guild if not
+    const guild = new Guild({
+        id: id
+    });
+    guild.save()
+        .then(() => {
+            console.log("Guild added to database");
+        }
+        ).catch(err => {
+            console.log(err);
+        }
+        );
+}
+
+export const removeGuild = async (id) => {
+
+    const guild
+        = await Guild
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (guild) {
+        guild.destroy();
+    }
+}
+
 

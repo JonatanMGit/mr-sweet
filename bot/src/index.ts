@@ -1,10 +1,14 @@
-const { Client, GatewayIntentBits, Events, Collection } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] });
+import { Client, GatewayIntentBits, Events, Collection } from 'discord.js';
 require('dotenv').config();
 import * as fs from 'fs';
 const path = require('node:path');
 import { loadCommands, registerCommands } from './commandUtils';
+import { saveGuild, removeGuild } from './db';
 
+interface CustomClient extends Client {
+    commands: Collection<string, any>
+}
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] }) as CustomClient;
 
 client.commands = new Collection();
 
@@ -39,3 +43,15 @@ client.once(Events.ClientReady, () => {
 
 client.login(process.env.TOKEN);
 //ooggagaga
+
+client.on(Events.GuildCreate, async (guild) => {
+    console.log("Joined a new guild: " + guild.name);
+    // add guild to database
+    saveGuild(guild);
+});
+
+client.on(Events.GuildDelete, async (guild) => {
+    console.log("Left a guild: " + guild.name);
+    // remove guild from database
+    removeGuild(guild);
+});
