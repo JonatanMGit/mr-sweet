@@ -41,5 +41,5 @@ client.login(process.env.TOKEN);
 //ooggagaga
 
 if (process.env.web === 'true') {
-    require('./web.js');
+    require('./web/app.js');
 }
