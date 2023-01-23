@@ -5,7 +5,7 @@ const express = require('express');
 import axios from 'axios';
 
 // import User from './db.js';
-import { saveUser } from './db.js';
+import { saveUser, getUser } from './db.js';
 
 require('dotenv').config();
 
@@ -57,6 +57,34 @@ app.get('/discord-oauth-callback', (req, res) => {
     res.redirect("/dashboard");
   }
 });
+
+export const getUserGuilds = async (access_token) => {
+  const guilds = await axios.get("https://discord.com/api/users/@me/guilds", {
+    headers: {
+      authorization: `Bearer ${access_token}`,
+    },
+  });
+  return guilds.data;
+
+}
+
+//TODO: cache the access token for expires_in seconds
+export const getAccessToken = async (userID, refresh_token) => {
+  const res = await axios.post("https://discord.com/api/oauth2/token", new URLSearchParams({
+    client_id: process.env.clientId,
+    client_secret: process.env.clientSecret,
+    grant_type: "refresh_token",
+    refresh_token: refresh_token,
+    redirect_uri: redURI
+  }), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
+  // save the new refresh token
+  saveUser(userID, res.data.refresh_token);
+  return res.data.access_token;
+}
 
 
 app.get('/dashboard', (req, res) => {
