@@ -24,7 +24,11 @@ export const Guild = sequelize.define('Guild', {
         type: Sequelize.STRING,
         allowNull: false,
         primaryKey: true
+    }, name: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
+
 });
 
 // make an table for settings for each guild with the guild id as a foreign key
@@ -124,7 +128,7 @@ export const deleteUser = async (id) => {
 
 
 
-export const saveGuild = async (id) => {
+export const saveGuild = async (id, name) => {
     sequelize.sync();
     // check if guild already exists in the database with the same id and update refresh token if yes
 
@@ -137,11 +141,15 @@ export const saveGuild = async (id) => {
             });
     if (prevGuild) {
         console.log("Guild already exists in database");
+        // update guild name
+        prevGuild.name = name;
+        prevGuild.save();
         return;
     }
     // create a new guild if not
     const guild = new Guild({
-        id: id
+        id: id,
+        name: name
     });
     guild.save()
         .then(() => {
@@ -184,3 +192,13 @@ export const getGuilds = async () => {
     const guilds = await Guild.findAll();
     return guilds;
 }
+
+// set up database schema if not already set up
+sequelize.sync()
+    .then(() => {
+        console.log("Database schema created");
+    }
+    ).catch(err => {
+        console.log(err);
+    }
+    );

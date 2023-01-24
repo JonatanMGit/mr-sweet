@@ -47,7 +47,7 @@ client.login(process.env.TOKEN);
 client.on(Events.GuildCreate, async (guild) => {
     console.log("Joined a new guild: " + guild.name);
     // add guild to database
-    saveGuild(guild);
+    saveGuild(guild.id, guild.name);
 });
 
 client.on(Events.GuildDelete, async (guild) => {

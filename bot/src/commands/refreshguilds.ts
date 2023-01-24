@@ -21,7 +21,7 @@ module.exports = {
             const guilds = interaction.client.guilds.cache;
             // save all guilds
             guilds.forEach(async (guild) => {
-                await saveGuild(guild.id);
+                await saveGuild(guild.id, guild.name);
             }
             );
             await interaction.reply('Refreshed all guilds!');
@@ -29,7 +29,7 @@ module.exports = {
             // get guild from interaction
             const guild = interaction.guild;
             // save guild
-            await saveGuild(guild.id);
+            await saveGuild(guild.id, guild.name);
             await interaction.reply('Refreshed guild!');
         }
     },

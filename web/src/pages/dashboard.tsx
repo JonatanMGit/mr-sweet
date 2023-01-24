@@ -14,7 +14,6 @@ export async function getServerSideProps() {
     const db = require('../../../bot/dist/db');
     let guilds = await db.getGuilds();
     guilds = guilds.map(guild => guild.dataValues);
-    console.log(guilds);
     guilds = JSON.stringify(guilds);
  // output [{"id":"813852446069751838","createdAt":"2023-01-23T22:10:28.983Z","updatedAt":"2023-01-23T22:10:28.983Z"},{"id":"1050508742334103572","createdAt":"2023-01-24T21:28:29.424Z","updatedAt":"2023-01-24T21:28:29.424Z"},{"id":"751897058394374175","createdAt":"2023-01-24T21:28:29.428Z","updatedAt":"2023-01-24T21:28:29.428Z"},{"id":"974344173840908328","createdAt":"2023-01-24T21:28:29.429Z","updatedAt":"2023-01-24T21:28:29.429Z"},{"id":"1028723172851339375","createdAt":"2023-01-24T21:28:29.430Z","updatedAt":"2023-01-24T21:28:29.430Z"}]
     return { props: {guilds} }
@@ -43,7 +42,7 @@ export default function dashboard({guilds}) {
                                 // so we need to parse it to get the id and display it in a list with a link to the guilds dashboard /dashboard/:id
                               JSON.parse(guilds).map(guild => {
                                   return <li key={guild.id}><Link href={`/dashboard/${guild.id}`}
-                                  >{guild.id}</Link></li>
+                                  >{guild.name} ({guild.id})</Link></li>
                                 })
                           }
                           
