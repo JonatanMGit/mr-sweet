@@ -12,18 +12,35 @@ export type User = {
     refresh_token: string
 }
 export type Settings = {
-    enabled_commands: string[],
-    enabled_events: string[],
+    enabled_commands: string,
 }
 
+// create the guild table
+export const Guild = sequelize.define('Guild', {
+    // Model attributes are defined here
+    id: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        primaryKey: true
+    }
+});
 
-
-export type Guild = {
-    id: string,
-    name: string,
-    icon: string,
-    settings: Settings
-}
+// make an table for settings for each guild with the guild id as a foreign key
+export const Settings = sequelize.define('Settings', {
+    // Model attributes are defined here
+    enabled_commands: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    Guild: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        references: {
+            model: Guild,
+            key: 'id'
+        }
+    }
+});
 
 
 // create the user table
@@ -103,15 +120,7 @@ export const deleteUser = async (id) => {
     }
 }
 
-// create the guild table
-export const Guild = sequelize.define('Guild', {
-    // Model attributes are defined here
-    id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        primaryKey: true
-    }
-});
+
 
 export const saveGuild = async (id) => {
     sequelize.sync();

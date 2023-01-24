@@ -1,0 +1,7 @@
+{
+    "name": "mr-sweet",
+    "workspaces": [
+        "bot",
+        "web"
+    ]
+}
