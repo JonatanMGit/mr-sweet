@@ -3,5 +3,12 @@
     "workspaces": [
         "bot",
         "web"
-    ]
+    ],
+    "dependencies": {
+        "sequelize": "^6.28.0",
+        "sqlite3": "^5.1.4"
+    },
+    "scripts": {
+        "build": "cd bot && npm run build && cd ../web"
+    }
 }

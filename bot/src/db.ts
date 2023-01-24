@@ -1,11 +1,13 @@
 // set up database sequelize
 const { Sequelize } = require('sequelize');
+const rootDir = require('path').resolve('../database.sqlite');
 // set up sqlite database ./database.sqlite
 export const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './database.sqlite',
+    storage: rootDir,
     logging: false
 });
+console.log("Database path: " + rootDir);
 
 export type User = {
     id: string,
@@ -165,4 +167,20 @@ export const removeGuild = async (id) => {
     }
 }
 
+export const getGuild = async (id) => {
+    sequelize.sync();
+    const guild
+        = await Guild
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    return guild;
+}
 
+export const getGuilds = async () => {
+    sequelize.sync();
+    const guilds = await Guild.findAll();
+    return guilds;
+}

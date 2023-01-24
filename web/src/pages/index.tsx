@@ -10,28 +10,11 @@ import { json } from 'sequelize'
 const inter = Inter({ subsets: ['latin'] })
 // add the inter font to the page by using the Inter component and passing the subsets prop to it
 export async function getServerSideProps() {
-  const Sequelize = require('sequelize');
-  const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'C:/Users/jonat/code/mr-sweet/bot/database.sqlite',
-    logging: false
-  });
-  const User = sequelize.define('User', {
-    // Model attributes are defined here
-    id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        primaryKey: true
-    },
-    refresh_token: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-});
-  // return users as a list of user ids
-  const users = await User.findAll().then(users => {
-    return users.map(user => user.id+" ")
-  })
+  const db = require('../../../bot/dist/db')
+  let users = await db.getUsers()
+  users = users.map(user => user.id)
+  console.log(users)
+  users = JSON.stringify(users)
   return {
     props: {data: users}, // will be passed to the page component as props
   }

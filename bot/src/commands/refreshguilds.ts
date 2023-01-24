@@ -11,8 +11,7 @@ module.exports = {
                 .setRequired(false)),
     async execute(interaction) {
         // check if the user has the id of the owner of the bot
-        if (interaction.user.id !==
-            interaction.client.application.owner.id) {
+        if (interaction.user.id !== "337853846158180352") {
             await interaction.reply('You are not the owner of the bot!');
             return;
         }
