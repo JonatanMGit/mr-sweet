@@ -5,10 +5,13 @@
         "web"
     ],
     "dependencies": {
+        "mr-sweet": "^1.1.0",
         "sequelize": "^6.28.0",
         "sqlite3": "^5.1.4"
     },
     "scripts": {
-        "build": "cd bot && npm run build && cd ../web"
+        "build": "cd bot && npm run build && cd ../web",
+        "setup:bot": "npm install && cd bot && npm install && npm run build",
+        "start:bot": "cd bot && npm start"
     }
 }

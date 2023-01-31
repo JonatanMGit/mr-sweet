@@ -9,7 +9,7 @@ interface CustomClient extends Client {
     commands: Collection<string, any>
 }
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] }) as CustomClient;
-
+export default client;
 client.commands = new Collection();
 
 // make it async so that the bot can already start while the commands are being registered
