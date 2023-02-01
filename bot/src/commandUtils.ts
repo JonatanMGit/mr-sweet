@@ -49,7 +49,35 @@ export function registerCommands(client) {
         }
     })();
 }
+
+// delete all global commands
+export function prepareGlobalCommands(client) {
+    const command = require(`./commands/about.js`);
+    // publish this one command globally to show that the bot is invite only
+    const commands = [];
+    commands.push(command.data.toJSON());
+    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
+    (async () => {
+        try {
+            console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+            const data = await rest.put(
+                Routes.applicationCommands("1043905318867980530"),
+                { body: commands },
+            );
+            // @ts-ignore
+            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    )();
+
+
+}
 module.exports = {
     loadCommands,
-    registerCommands
+    registerCommands,
+    prepareGlobalCommands
 };

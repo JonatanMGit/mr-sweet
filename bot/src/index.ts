@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, Events, Collection } from 'discord.js';
 require('dotenv').config();
 import * as fs from 'fs';
 const path = require('node:path');
-import { loadCommands, registerCommands } from './commandUtils';
+import { prepareGlobalCommands, loadCommands, registerCommands } from './commandUtils';
 import { saveGuild, removeGuild } from './db';
 
 interface CustomClient extends Client {
@@ -18,6 +18,7 @@ client.commands = new Collection();
     // reload commands
     registerCommands(client);
     loadCommands(client);
+    prepareGlobalCommands(client);
 
 
 })();
