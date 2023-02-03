@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, Events, Collection, ActivityType } from 'discord.js';
 require('dotenv').config();
 import * as fs from 'fs';
 const path = require('node:path');
@@ -56,3 +56,16 @@ client.on(Events.GuildDelete, async (guild) => {
     // remove guild from database
     removeGuild(guild);
 });
+
+client.on(Events.ClientReady, () => {
+    client.user?.setPresence({
+        activities: [
+            {
+                name: 'you',
+                type: ActivityType.Watching,
+            },
+        ],
+        status: 'online',
+    });
+})
+
