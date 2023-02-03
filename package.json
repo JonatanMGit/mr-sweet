@@ -5,6 +5,7 @@
         "web"
     ],
     "dependencies": {
+        "bad-words": "^3.0.4",
         "mr-sweet": "^1.1.0",
         "sequelize": "^6.28.0",
         "sqlite3": "^5.1.4"
