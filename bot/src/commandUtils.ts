@@ -6,7 +6,7 @@ import { Routes } from 'discord-api-types/v10';
 
 export function loadCommands(client) {
     const commandsPath = path.join(__dirname, 'commands');
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
 
 
     for (const file of commandFiles) {
@@ -25,7 +25,7 @@ export function registerCommands(client) {
     //register every slash command in the commands folder
     const commandsPath = path.join(__dirname, 'commands');
     const commands = [];
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts') && file !== "about.ts");
     console.log("Starting to register commands");
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);
@@ -52,7 +52,7 @@ export function registerCommands(client) {
 
 // delete all global commands
 export function prepareGlobalCommands(client) {
-    const command = require(`./commands/about.js`);
+    const command = require(`./commands/about`);
     // publish this one command globally to show that the bot is invite only
     const commands = [];
     commands.push(command.data.toJSON());

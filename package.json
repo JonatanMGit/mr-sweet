@@ -14,5 +14,8 @@
         "build": "cd bot && npm run build && cd ../web",
         "setup:bot": "npm install && cd bot && npm install && npm run build",
         "start:bot": "cd bot && npm start"
+    },
+    "devDependencies": {
+        "ts-node-dev": "^2.0.0"
     }
 }

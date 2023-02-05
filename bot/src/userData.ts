@@ -5,7 +5,7 @@ const express = require('express');
 import axios from 'axios';
 
 // import User from './db.js';
-import { saveUser, getUser } from './db.js';
+import { saveUser, getUser } from './db';
 
 require('dotenv').config();
 
