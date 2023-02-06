@@ -31,8 +31,8 @@ module.exports = {
 
     async execute(interaction) {
         const input = interaction.options.getString('input');
-        const verbose = interaction.options.getBoolean('verbose');
-        let sendprivate = interaction.options.getBoolean('private');
+        const verbose = interaction.options.getBoolean('verbose') as Boolean;
+        let sendprivate = interaction.options.getBoolean('private') as Boolean;
         if (sendprivate === null) {
             sendprivate = false;
         }
@@ -40,7 +40,6 @@ module.exports = {
         const command = interaction.options.getSubcommand();
 
         if (command === 'ai') {
-
             const response = await openai.createModeration({
                 input: input,
             });
