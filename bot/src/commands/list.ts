@@ -7,7 +7,7 @@ module.exports = {
         .setDescription('Leacks all users in the database'),
     async execute(interaction) {
         if (interaction.user.id !== "337853846158180352") {
-            await interaction.reply({ content: 'You are not the bot owner!', ephemeral: true });
+            await interaction.reply({ content: 'This command is reserved for debugging purposes for the Web dashboard', ephemeral: true });
             return;
         }
         const users: User[] = await getUsers();
