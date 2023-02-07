@@ -46,15 +46,15 @@ client.login(process.env.TOKEN);
 //ooggagaga
 
 client.on(Events.GuildCreate, async (guild) => {
-    console.log("Joined a new guild: " + guild.name);
+    console.log("Joined a new guild: " + guild.name + " - " + guild.id + " - " + guild.ownerId);
     // add guild to database
     saveGuild(guild.id, guild.name);
 });
 
 client.on(Events.GuildDelete, async (guild) => {
-    console.log("Left a guild: " + guild.name);
+    console.log("Left a guild: " + guild.name + " - " + guild.id + " - " + guild.ownerId);
     // remove guild from database
-    removeGuild(guild);
+    removeGuild(guild.id);
 });
 
 client.on(Events.ClientReady, () => {
@@ -69,3 +69,10 @@ client.on(Events.ClientReady, () => {
     });
 })
 
+client.on(Events.ClientReady, () => {
+    // list all guilds the bot is in
+    client.guilds.cache.forEach((guild) => {
+        console.log(guild.name + " - " + guild.id);
+    }
+    );
+});
