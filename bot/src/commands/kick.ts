@@ -1,5 +1,6 @@
+import { GuildMember } from "discord.js";
+
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { registerCommands, loadCommands } = require("../commandUtils");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,9 +20,23 @@ module.exports = {
             return;
         }
         // get the user to kick
-        const user = interaction.options.getUser("user");
+        const user = interaction.options.getUser("user") as GuildMember;
+
+        // check if the user is kickable
+        if (!user.kickable) {
+            await interaction.reply({ content: "I can't kick this user", ephemeral: true });
+            return;
+        }
 
         const reason = interaction.options.getString("reason");
+
+        // send dm to user
+        let message = `You have been kicked from ${interaction.guild.name}`;
+        if (reason) {
+            message += ` for ${reason}`;
+        }
+        await user.send(message);
+
         // kick the user
         await interaction.guild.members.kick(user, { reason: reason });
         await interaction.reply(`Kicked ${user}`);
