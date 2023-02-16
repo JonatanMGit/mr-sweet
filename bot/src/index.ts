@@ -1,11 +1,9 @@
-import { Client, GatewayIntentBits, Events, Collection, ActivityType } from 'discord.js';
+import { Client, GatewayIntentBits, Events, Collection } from 'discord.js';
 require('dotenv').config();
-import * as fs from 'fs';
-const path = require('node:path');
 import { prepareGlobalCommands, loadCommands, registerCommands } from './commandUtils';
-import { saveGuild, removeGuild } from './db';
+import handleEvents from './eventHandler';
 
-interface CustomClient extends Client {
+export interface CustomClient extends Client {
     commands: Collection<string, any>
 }
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationExecution] }) as CustomClient;
@@ -19,60 +17,13 @@ client.commands = new Collection();
     registerCommands(client);
     loadCommands(client);
     prepareGlobalCommands(client);
-
+    handleEvents(client);
 
 })();
-// Handle events
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
-
-for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
-    const event = require(filePath);
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
-}
-
-// Set up the bot
+// Notify when the bot is ready
 client.once(Events.ClientReady, () => {
     console.log('Ready!');
 });
 
 client.login(process.env.TOKEN);
-//ooggagaga
-
-client.on(Events.GuildCreate, async (guild) => {
-    console.log("Joined a new guild: " + guild.name + " - " + guild.id + " - " + guild.ownerId);
-    // add guild to database
-    saveGuild(guild.id, guild.name);
-});
-
-client.on(Events.GuildDelete, async (guild) => {
-    console.log("Left a guild: " + guild.name + " - " + guild.id + " - " + guild.ownerId);
-    // remove guild from database
-    removeGuild(guild.id);
-});
-
-client.on(Events.ClientReady, () => {
-    client.user?.setPresence({
-        activities: [
-            {
-                name: 'you',
-                type: ActivityType.Watching,
-            },
-        ],
-        status: 'online',
-    });
-})
-
-client.on(Events.ClientReady, () => {
-    // list all guilds the bot is in
-    client.guilds.cache.forEach((guild) => {
-        console.log(guild.name + " - " + guild.id);
-    }
-    );
-});
