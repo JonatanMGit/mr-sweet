@@ -8,7 +8,7 @@ import { saveGuild, removeGuild } from './db';
 interface CustomClient extends Client {
     commands: Collection<string, any>
 }
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] }) as CustomClient;
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationExecution] }) as CustomClient;
 export default client;
 client.commands = new Collection();
 
