@@ -4,7 +4,9 @@
     "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
-    "allowJs": true
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["./src/**/*"],
   "assets": ["./src/**/*"]
