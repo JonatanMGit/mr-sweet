@@ -17,5 +17,13 @@
     },
     "devDependencies": {
         "ts-node-dev": "^2.0.0"
-    }
+    },
+    "repository": "github:JonatanMGit/mr-sweet",
+    "author": "JonatanMGit",
+    "license": "AGPL-3.0",
+    "bugs": {
+        "url": "https://github.com/JonatanMGit/mr-sweet/issues"
+    },
+    "homepage": "https://github.com/JonatanMGit/mr-sweet",
+    "private": true
 }
