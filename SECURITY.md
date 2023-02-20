@@ -8,7 +8,7 @@ Only the latest version of Mr Sweet is currently supported. If you're using an o
 
 ## Reporting a Vulnerability
 
-If you discover a vulnerability in Mr Sweet, please report it to us as soon as possible. To report a vulnerability, please fill out a (github advisory)[https://github.com/JonatanMGit/mr-sweet/security/advisories/new] with the following information:
+If you discover a vulnerability in Mr Sweet, please report it to us as soon as possible. To report a vulnerability, please fill out a [Github advisory](https://github.com/JonatanMGit/mr-sweet/security/advisories/new) with the following information:
 
 - A detailed description of the vulnerability, including steps to reproduce it
 - The version of Mr Sweet you're using
