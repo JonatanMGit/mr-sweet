@@ -15,6 +15,7 @@ const messages = [
     "https://media.tenor.com/32zLXcYBbH8AAAAd/speech-bubble.gif",
     "wts",
     "https://tenor.com/de/view/family-guy-fart-meg-peter-gif-8122927",
+    "https://media.discordapp.net/attachments/813852446069751842/1079177556537905264/40dffb8650781dabdae0b21f72da71ce.jpg"
 ];
 
 
@@ -22,28 +23,26 @@ const messages = [
 module.exports = {
     name: Events.AutoModerationActionExecution,
     async execute(excecution: AutoModerationActionExecution) {
-        // get the message that triggered the action so that we can reply to it
-        const messageid = excecution.messageId;
-        const channelid = excecution.channelId;
-
-        // limit the messages to only respond to messages in the guild with the id 813852446069751838
         if (excecution.guild.id !== "813852446069751838") return;
 
-        const channel = await excecution.guild.channels.cache.get(channelid) as TextChannel;
-        if (!channel) {
-            console.error(`No channel matching ${channelid} was found.`);
-            return;
+        // if the action is a message delete reply to the channel instead of the message
+        if (excecution.action.type === 2) {
+            const channel = await excecution.guild.channels.cache.get(excecution.channelId) as TextChannel;
+            if (!channel) {
+                console.error(`No channel matching ${excecution.channelId} was found.`);
+                return;
+            }
+
+            const message = await channel.messages.fetch(excecution.messageId);
+            if (!message) {
+                console.error(`No message matching ${excecution.messageId} was found.`);
+                return;
+            }
+            try {
+                await message.reply(messages[Math.floor(Math.random() * messages.length)]);
+            } catch (error) {
+                console.error(error);
+            }
         }
-
-        const message = await channel.messages.fetch(messageid);
-        if (!message) {
-            console.error(`No message matching ${messageid} was found.`);
-            return;
-        }
-
-        // reply to the message with a chance of 50%
-        if (Math.random() < 0.5)
-            await message.reply(messages[Math.floor(Math.random() * messages.length)]);
-
     }
-};
+}
