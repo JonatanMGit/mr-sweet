@@ -4,3 +4,5 @@ npm-debug.log
 .git
 web
 **/*dist
+.github
+database.sqlite
