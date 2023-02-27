@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@trongnd/ts-nodemon": "^1.0.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.14.2",
     "@types/sqlite3": "^3.1.8",
     "copyfiles": "^2.4.1",
     "cpx": "^1.5.0",
