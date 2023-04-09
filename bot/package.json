@@ -36,7 +36,7 @@
     "openai": "^3.1.0"
   },
   "devDependencies": {
-    "@trongnd/ts-nodemon": "^1.0.0",
+    "@trongnd/ts-nodemon": "^1.0.3",
     "@types/node": "^18.15.11",
     "@types/sqlite3": "^3.1.8",
     "copyfiles": "^2.4.1",
