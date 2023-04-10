@@ -1,16 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 //import bad-words npm package
-var Filter = require('bad-words'),
+let Filter = require('bad-words'),
     filter = new Filter();
 
-import { OpenAIApi, Configuration } from 'openai';
-require('dotenv').config();
+import { openai } from '../ai';
 
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('moderation')
