@@ -1,6 +1,11 @@
 import { OpenAIApi, Configuration } from 'openai';
 require('dotenv').config();
 import { ChatCompletionRequestMessage } from 'openai';
+import { Readable, Stream } from 'stream'
+
+// inheriting the CreateChatCompletionResponse Interface through a Readable.
+export interface CreateChatCompletionResponse extends Readable {
+}
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -15,7 +20,7 @@ export const defaultSystemPrompt = `You are a Discord bot called mr sweet. You m
 export const gpt4Model = 'gpt-4'
 export const gpt3Model = 'gpt-3.5-turbo'
 
-export const getResponse = async (messages: {
+export const getResponse = (messages: {
     author: string;
     content: string;
 }[], model: string) => {
@@ -34,7 +39,7 @@ export const getResponse = async (messages: {
     });
     // invert the array
 
-    console.log(message)
+    // console.log(message)
 
     // get the newest message user id
     const user = messages[messages.length - 1].author;
@@ -43,16 +48,17 @@ export const getResponse = async (messages: {
 
     // return "test"
 
-    const response = await openai.createChatCompletion({
+    const response = openai.createChatCompletion({
         model: model,
         messages: message,
         max_tokens: 100,
         n: 1,
         user: hash,
-    });
+        stream: true,
+    }, { responseType: 'stream' });
 
 
-
-    return response.data.choices[0].message;
+    // https://github.com/openai/openai-node/issues/107
+    return response as any;
 }
 
