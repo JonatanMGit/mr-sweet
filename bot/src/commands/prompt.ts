@@ -1,36 +1,33 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import {openai, gpt4Model, defaultSystemPrompt} from '../ai';
+import { openai, gpt4Model, gpt3Model, defaultSystemPrompt } from '../ai';
+import { ChatCompletionRequestMessage } from 'openai';
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('prompt')
         .setDescription('Ask Mr Sweet anything')
         .addStringOption(option => option.setName('input').setDescription('Your Message').setRequired(true))
-        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false)).addChoice('gpt-4', 'gpt-4').addChoice('gpt-3.5-turbo', 'gpt-3.5-turbo'),
+        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false)),
     async execute(interaction) {
-        await interaction.reply({
-            content: 'Please wait...',
-        }
+        await interaction.reply("Thinking...")
         const input = interaction.options.getString('input');
         const selectedModel = interaction.options.getString('model');
 
+        let model = '';
         if (selectedModel === 'gpt-4') {
             model = gpt4Model;
         } else {
             model = gpt3Model;
         }
 
-        const message = [{ role: "System", content: defaultSystemPrompt }, { role: "User", content: input }];
+        const message = [{ role: "system", content: defaultSystemPrompt }, { role: "user", content: input }] as ChatCompletionRequestMessage[];
 
         const response = await openai.createChatCompletion({
-            model: Model,
-            prompt: defaultSystemPrompt + input,
-            maxTokens: 100,
+            model: model,
+            messages: message,
+            max_tokens: 500,
         });
 
-        interaction.editReply({
-            content: response.data.choices[0].text,
-        });
-
+        await interaction.editReply(response.data.choices[0].message);
     },
 };
