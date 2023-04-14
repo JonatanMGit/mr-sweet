@@ -24,21 +24,69 @@ const DISCORD_APPLICATIONS = [
 ];
 
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { APIApplicationCommandOptionChoice, CommandInteraction } from 'discord.js';
+const fetch = require("node-fetch");
+let choises = [];
 
-// add everz possible activity that can be used
-// so check is use is true
+for (const application of DISCORD_APPLICATIONS) {
+	if (application.use) {
+		const choice: APIApplicationCommandOptionChoice<string> = {
+			name: application.name,
+			value: application.id
+		};
+		choises.push(choice);
+
+	}
+}
+
+let command = new SlashCommandBuilder()
+	.setName('activities')
+	.setDescription('Start an activity with your friends!')
+	.addStringOption(option => {
+		option.setName('activity')
+			.setDescription('The activity you want to start')
+			.setRequired(true)
+
+		for (const choice of choises) {
+			const cur_choice = {
+				"name": choice.name, "value": choice.value
+			}
+			option.addChoices(cur_choice)
+		}
+		return option;
+	});
+
+
+// add every choice as an array of [name, name]
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('activities')
-		.setDescription('Start an activity with your friends!')
-		.addStringOption(option => option.setName('activity').setDescription('The activity you want to start').setRequired(true).addChoices(DISCORD_APPLICATIONS.filter(activity => activity.use).map(activity => [activity.name, activity.id]))),
-    async execute(interaction) {
+	data: command,
+	async execute(interaction: CommandInteraction) {
 		// generate a new invite for the activity using the activity id from the option
-		const invite = await interaction.client.api
-			.applications(interaction.options.getString('activity'))
-			.invites.post({ data: { max_age: 86400, max_uses: 0, target_application_id: interaction.options.getString('activity'), target_type: 2, temporary: false, validate: null } });
-		
+		// @ts-ignore
+		const invite = await activityInvite(interaction.options.getString('activity', true), interaction.channelId);
+
+
 		// send the invite to the channel
 		await interaction.reply(`https://discord.gg/${invite.code}`);
-    },
+	},
 };
+
+
+async function activityInvite(applicationId: string, channelId: string) {
+	const invite = await fetch(`https://discord.com/api/v8/channels/1055955436643287071/invites`, {
+		method: 'POST',
+		body: JSON.stringify({
+			max_age: 86400,
+			max_uses: 0,
+			target_application_id: applicationId,
+			target_type: 2,
+			temporary: false,
+			validate: null,
+		}),
+		headers: {
+			"Authorization": `Bot ${process.env.TOKEN}`,
+			"Content-Type": "application/json",
+		},
+	});
+	return invite.json();
+}
