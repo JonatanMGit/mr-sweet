@@ -1,6 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { openai, gpt4Model, gpt3Model, defaultSystemPrompt } from '../ai';
 import { ChatCompletionRequestMessage } from 'openai';
+import { RateLimiter } from 'discord.js-rate-limiter';
+let rateLimiter = new RateLimiter(1, 10000);
+
 
 module.exports = {
     global: true,
@@ -8,8 +11,16 @@ module.exports = {
         .setName('prompt')
         .setDescription('Ask Mr Sweet anything')
         .addStringOption(option => option.setName('input').setDescription('Your Message').setRequired(true))
-        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false)),
+        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false).addChoices({ name: 'Mr Sweet v3', value: 'gpt-3' }, { name: 'Mr Sweet v4', value: 'gpt-4' })),
     async execute(interaction) {
+        let limited = rateLimiter.take(interaction.user.id);
+        if (limited) {
+            interaction.reply({
+                content: "You are sending messages too fast!",
+                ephemeral: true
+            });
+            return;
+        }
         await interaction.reply("Thinking...")
         const input = interaction.options.getString('input');
         const selectedModel = interaction.options.getString('model');
