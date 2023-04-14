@@ -1,3 +1,5 @@
+import { ForeignKeyConstraintError } from "sequelize";
+
 // set up database sequelize
 const { Sequelize } = require('sequelize');
 const rootDir = require('path').resolve('../database.sqlite');
@@ -11,9 +13,14 @@ console.log("Database path: " + rootDir);
 
 export type User = {
     id: string,
-    refresh_token: string
+    refresh_token?: string
+    openai_request_count: number
+    commands_used: number
+    v3tokens_used: number
+    v4tokens_used: number
 }
 export type Settings = {
+    Guild: string,
     enabled_commands: string,
 }
 
@@ -21,7 +28,7 @@ export type Settings = {
 export const Guild = sequelize.define('Guild', {
     // Model attributes are defined here
     id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true
     }, name: {
@@ -34,17 +41,20 @@ export const Guild = sequelize.define('Guild', {
 // make an table for settings for each guild with the guild id as a foreign key
 export const Settings = sequelize.define('Settings', {
     // Model attributes are defined here
-    enabled_commands: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    Guild: {
-        type: Sequelize.STRING,
+    id: {
+        // id of guild is the primary key
+        type: Sequelize.INTEGER,
         allowNull: false,
+        primaryKey: true,
         references: {
+            // This is a reference to another model
             model: Guild,
             key: 'id'
         }
+    },
+    enabled_commands: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 });
 
@@ -59,30 +69,54 @@ export const User = sequelize.define('User', {
     },
     refresh_token: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
+    },
+    openai_request_count: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
+    commands_used: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
+    ,
+    v3tokens_used: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
+    ,
+    v4tokens_used: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
     }
 });
 
-export const saveUser = async (id, refresh_token) => {
+export const saveUser = async (options: User) => {
     sequelize.sync();
     // check if user already exists in the database with the same id and update refresh token if yes
 
     const prevUser
         = await User.findOne({
             where: {
-                id: id,
+                id: options.id,
             }
         });
     if (prevUser) {
         console.log("User already exists in database");
-        prevUser.refresh_token = refresh_token;
-        prevUser.save();
+        if (options.refresh_token != null) {
+            prevUser.refresh_token = options.refresh_token;
+            prevUser.save();
+        }
         return;
     }
     // create a new user if not
     const user = new User({
-        id: id,
-        refresh_token: refresh_token
+        id: options.id,
+        refresh_token: options.refresh_token,
     });
     // export promise
     user.save()
@@ -154,6 +188,7 @@ export const saveGuild = async (id, name) => {
     guild.save()
         .then(() => {
             console.log("Guild added to database");
+            createSettings(id);
         }
         ).catch(err => {
             console.log(err);
@@ -202,3 +237,137 @@ sequelize.sync()
         console.log(err);
     }
     );
+
+function createSettings(guildId: string) {
+    const settings = new Settings({
+        id: guildId,
+        enabled_commands: "[]"
+    });
+    settings.save()
+        .then(() => {
+            console.log("Settings added to database");
+        }
+        ).catch(err => {
+            console.log(err);
+        }
+        );
+}
+
+// update the database schema if it has changed
+if (process.env.NODE_ENV == 'development')
+    sequelize.sync({ alter: true })
+        .then(() => {
+            console.log("Database schema updated");
+        }
+        ).catch(err => {
+            console.log(err);
+        }
+        );
+
+export const getSettings = async (guildId: string) => {
+    sequelize.sync();
+    const settings
+        = await Settings
+            .findOne({
+                where: {
+                    id: guildId,
+                }
+            });
+    return settings;
+}
+
+export const count_openai_request = async (id) => {
+    sequelize.sync();
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        user.openai_request_count += 1;
+        user.save();
+    } else {
+        console.log("User not found");
+        create_user(id);
+    }
+}
+
+export const count_commands = async (id) => {
+    sequelize.sync();
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        user.commands_used += 1;
+        user.save();
+    } else {
+        console.log("User not found");
+        const user = await create_user(id);
+        user.commands_used += 1;
+        user.save();
+    }
+}
+
+export const create_user = async (id) => {
+    sequelize.sync();
+    const user = new User({
+        id: id,
+        refresh_token: null,
+        v3tokens_used: 0,
+        v4tokens_used: 0,
+        openai_request_count: 0,
+    });
+    user.save()
+        .then(() => {
+            console.log("User added to database");
+
+        }
+        ).catch(err => {
+            console.log(err);
+        }
+        );
+    return user;
+}
+
+
+export const count_v3tokens = async (id, tokens) => {
+    sequelize.sync();
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        user.v3tokens_used += tokens;
+        user.save();
+    } else {
+        console.log("User not found");
+        create_user(id);
+    }
+}
+
+export const count_v4tokens = async (id, tokens) => {
+    sequelize.sync();
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        user.v4tokens_used += tokens;
+        user.save();
+    } else {
+        console.log("User not found");
+        create_user(id);
+    }
+}

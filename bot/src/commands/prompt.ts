@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { openai, gpt4Model, gpt3Model, defaultSystemPrompt } from '../ai';
+import { openai, gpt4Model, gpt3Model, defaultSystemPrompt, count_tokens, Message } from '../ai';
 import { ChatCompletionRequestMessage } from 'openai';
 import { RateLimiter } from 'discord.js-rate-limiter';
 let rateLimiter = new RateLimiter(1, 10000);
@@ -24,7 +24,7 @@ module.exports = {
             return;
         }
 
-        interaction.deferReply({ fetchReply: true });
+        interaction.deferReply();
 
         const input = interaction.options.getString('input');
         const selectedModel = interaction.options.getString('model');
@@ -36,11 +36,11 @@ module.exports = {
             model = gpt3Model;
         }
 
-        const response = await getResponse([{ author: interaction.user.id, content: input }], model);
+        const message = [{ author: interaction.user.id, content: input }] as Message[];
+
+        const response = await getResponse(message, model);
 
         let data = '';
-
-
 
         // update the message with the new data every 1 seconds until the stream is finished
         const interval = setInterval(() => {
@@ -49,7 +49,7 @@ module.exports = {
 
         response.data.on('data', (chunk) => {
             const lines = chunk.toString().split('\n').filter(line => line.trim() !== '');
-            // console.log(lines);
+            //console.log(lines);
             for (const line of lines) {
                 const message = line.replace(/^data: /, '');
                 //console.log(message);
@@ -68,6 +68,8 @@ module.exports = {
         response.data.on('end', () => {
             clearInterval(interval);
             interaction.editReply(data);
+            message.push({ "author": "assistant", "content": data });
+            count_tokens(message, interaction.user.id, model);
         });
     },
 };
