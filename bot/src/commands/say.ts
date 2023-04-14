@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('say')
         .setDescription('Replies with your input!')

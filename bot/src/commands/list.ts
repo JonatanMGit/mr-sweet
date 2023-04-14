@@ -2,6 +2,7 @@ import { getUsers, User } from "../db";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('list')
         .setDescription('Leacks all users in the database'),

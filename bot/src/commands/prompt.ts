@@ -3,6 +3,7 @@ import { openai, gpt4Model, gpt3Model, defaultSystemPrompt } from '../ai';
 import { ChatCompletionRequestMessage } from 'openai';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('prompt')
         .setDescription('Ask Mr Sweet anything')

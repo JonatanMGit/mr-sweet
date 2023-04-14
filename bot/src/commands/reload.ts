@@ -5,6 +5,7 @@ import client from '../index';
 import { saveGuild } from '../db';
 
 module.exports = {
+  global: false,
   data: new SlashCommandBuilder()
     .setName("reload")
     .setDescription("Reloads a specific feature (DEBUG)")

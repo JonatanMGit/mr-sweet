@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 module.exports = {
+    global: false,
     data: new SlashCommandBuilder()
         .setName('fart')
         .setDescription('Fart!'),

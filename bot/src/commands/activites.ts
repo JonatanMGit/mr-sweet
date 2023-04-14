@@ -59,6 +59,7 @@ let command = new SlashCommandBuilder()
 
 // add every choice as an array of [name, name]
 module.exports = {
+	global: true,
 	data: command,
 	async execute(interaction: CommandInteraction) {
 		// generate a new invite for the activity using the activity id from the option

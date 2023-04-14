@@ -269,6 +269,7 @@ https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Ft
 // the max subcommand limit is 25
 // Source: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure
 module.exports = {
+    global: false,
     data: new SlashCommandBuilder()
         .setName('hymne')
         // add bool option

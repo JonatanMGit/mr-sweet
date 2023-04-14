@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildMember, User } from 'discord.js';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('avatar')
         .addUserOption(option =>

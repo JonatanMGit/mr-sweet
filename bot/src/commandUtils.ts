@@ -5,16 +5,16 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import { CustomClient } from './index';
 
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
 export function loadCommands(client: CustomClient) {
-    const commandsPath = path.join(__dirname, 'commands');
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
-
-
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
         // Set a new item in the Collection with the key as the command name and the value as the exported module
-        if ('data' in command && 'execute' in command) {
+        if ('data' in command && 'execute' in command && 'global' in command) {
             client.commands.set(command.data.name, command);
         } else {
             console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
@@ -23,28 +23,27 @@ export function loadCommands(client: CustomClient) {
 }
 
 export function registerCommands(client: CustomClient) {
-    //register every slash command in the commands folder
-    const commandsPath = path.join(__dirname, 'commands');
+    //register every slash command in the commands folder if command.global is false
     const commands = [];
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts') && file !== "about.ts");
     console.log("Starting to register commands");
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);
-        commands.push(command.data.toJSON());
-    }
 
-    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+        if (command.global === false) {
+            commands.push(command.data.toJSON());
+        }
+    }
 
     (async () => {
         try {
-            console.log(`Started refreshing ${commands.length} application (/) commands.`);
+            console.log(`Started refreshing ${commands.length} SWT application (/) commands.`);
 
             const data = await rest.put(
                 Routes.applicationGuildCommands("1043905318867980530", "813852446069751838"),
                 { body: commands },
             );
             // @ts-ignore
-            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+            console.log(`Successfully reloaded ${data.length} SWT application (/) commands.`);
         } catch (error) {
             console.error(error);
         }
@@ -53,22 +52,28 @@ export function registerCommands(client: CustomClient) {
 
 // delete all global commands
 export function prepareGlobalCommands(client: CustomClient) {
-    const command = require(`./commands/about`);
-    // publish this one command globally to show that the bot is invite only
+    //register every glboal slash command in the commands folder if command.global is true
     const commands = [];
-    commands.push(command.data.toJSON());
-    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+    console.log("Starting to register commands");
+    for (const file of commandFiles) {
+        const command = require(`./commands/${file}`);
+
+        if (command.global === true) {
+            commands.push(command.data.toJSON());
+        }
+    }
+
 
     (async () => {
         try {
-            console.log(`Started refreshing ${commands.length} application (/) commands.`);
+            console.log(`Started refreshing ${commands.length} global application (/) commands.`);
 
             const data = await rest.put(
                 Routes.applicationCommands("1043905318867980530"),
                 { body: commands },
             );
             // @ts-ignore
-            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+            console.log(`Successfully reloaded ${data.length} global application (/) commands.`);
         } catch (error) {
             console.error(error);
         }

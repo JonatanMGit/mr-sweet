@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { faker } from '@faker-js/faker';
 const offset = 30000;
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('hack')
         .setDescription('Hacks a user')

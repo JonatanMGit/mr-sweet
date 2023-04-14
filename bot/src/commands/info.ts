@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('info')
         .setDescription('Get Information about something')
@@ -57,8 +58,8 @@ username
             \nDM channel: ${user.dmChannel}
             \nPartial: ${user.partial}
             \nCreated at timestamp: ${user.createdTimestamp}`;
-            await interaction.reply(message, {allowedMentions: {parse: []}});
-        } else if (subcommand === 'server') {   
+            await interaction.reply(message, { allowedMentions: { parse: [] } });
+        } else if (subcommand === 'server') {
             const message = `Name: ${interaction.guild.name}
             \nID: ${interaction.guild.id}
             \nOwner: ${interaction.guild.owner}
@@ -105,8 +106,8 @@ username
             \nUnavailable: ${interaction.guild.unavailable}
             \nLarge: ${interaction.guild.large}
             `
-            await interaction.reply(message, {allowedMentions: {parse: []}});
-        
+            await interaction.reply(message, { allowedMentions: { parse: [] } });
+
         }
 
     },

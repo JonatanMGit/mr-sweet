@@ -6,6 +6,7 @@ let Filter = require('bad-words'),
 import { openai } from '../ai';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('moderation')
         .setDescription('Detects if an input is inappropriate')

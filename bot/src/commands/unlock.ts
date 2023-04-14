@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { PermissionsBitField } from 'discord.js';
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('unlock')
         .setDescription('Unlocks the channel'),

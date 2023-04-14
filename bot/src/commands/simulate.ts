@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 const Markov = require('js-markov');
 var markov = new Markov();
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('simulate')
         .setDescription('simulates what a user would say')

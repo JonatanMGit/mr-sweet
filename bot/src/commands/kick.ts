@@ -3,6 +3,7 @@ import { GuildMember } from "discord.js";
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName("kick")
         .setDescription("Kick a user").
