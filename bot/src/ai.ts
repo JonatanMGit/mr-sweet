@@ -4,7 +4,7 @@ import { ChatCompletionRequestMessage } from 'openai';
 import { Readable } from 'stream'
 import { count_openai_request, count_v3tokens, count_v4tokens } from './db';
 import { encoding_for_model } from "@dqbd/tiktoken";
-// inheriting the CreateChatCompletionResponse Interface through a Readable.
+
 export interface CreateChatCompletionResponse extends Readable {
 }
 
@@ -31,24 +31,14 @@ export type Message = {
 
 export const getResponse = (messages: Message[], model: string) => {
 
-    const message = [{ role: "system", content: defaultSystemPrompt }] as ChatCompletionRequestMessage[];
-
-    // add the messages to the message array detecting if the message is from the user or the bot with the id 1043905318867980530
-    // assistant for the bot
-    // user for the user
-    messages.forEach((value) => {
-        if (value.author === "1043905318867980530") {
-            message.push({ role: "assistant", content: value.content });
-        } else {
-            message.push({ role: "user", content: value.content });
-        }
-    });
+    const message = messagesToChatCompletionRequestMessage(messages);
     // invert the array
 
     // console.log(message)
 
     // get the newest message user id
-    const user = messages[messages.length - 1].author;
+    const user = getUser(messages);
+
     count_openai_request(user);
     // hash the user id
     const hash = require('crypto').createHash('sha256').update(user).digest('hex');
@@ -69,7 +59,7 @@ export const getResponse = (messages: Message[], model: string) => {
     return response as any;
 }
 
-export function count_tokens(messages: Message[], userid: string, model: "gpt-4" | "gpt-3.5-turbo" | any): void {
+export function count_tokens(messages: ChatCompletionRequestMessage[], userid: string, model: "gpt-4" | "gpt-3.5-turbo" | any): void {
     // https://community.openai.com/t/do-you-get-billed-extra-when-echo-true/46502/3
     // https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
     const enc = encoding_for_model(model);
@@ -93,6 +83,9 @@ export function count_tokens(messages: Message[], userid: string, model: "gpt-4"
 
         }
     }
+    // add 4 tokens for the end of the prompt
+    num_tokens += 4;
+
     // add the tokens to the database
     if (model === "gpt-4") {
         count_v4tokens(userid, num_tokens);
@@ -104,8 +97,30 @@ export function count_tokens(messages: Message[], userid: string, model: "gpt-4"
     return;
 }
 
+export function messagesToChatCompletionRequestMessage(messages: Message[]): ChatCompletionRequestMessage[] {
+    const message = [{ role: "system", content: defaultSystemPrompt }] as ChatCompletionRequestMessage[];
 
+    // add the messages to the message array detecting if the message is from the user or the bot with the id 1043905318867980530
+    // assistant for the bot
+    // user for the user
+    messages.forEach((value) => {
+        if (value.author === "1043905318867980530") {
+            message.push({ role: "assistant", content: value.content });
+        } else {
+            message.push({ role: "user", content: value.content });
+        }
+    });
+    return message;
+}
 
-
-
-
+export function getUser(messages: Message[]): string {
+    // get the newest message user id but check if the message is from the bot or the user and try to find the latest message from the user
+    let user = "";
+    for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].author !== "1043905318867980530") {
+            user = messages[i].author;
+            break;
+        }
+    }
+    return user;
+}

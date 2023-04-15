@@ -1,5 +1,5 @@
 import { ChannelType, Events, Message } from 'discord.js';
-import { count_tokens, getResponse, gpt3Model, gpt4Model } from '../ai';
+import { count_tokens, getResponse, getUser, gpt3Model, gpt4Model, messagesToChatCompletionRequestMessage } from '../ai';
 import { RateLimiter } from 'discord.js-rate-limiter';
 let rateLimiter = new RateLimiter(1, 5000);
 
@@ -83,9 +83,9 @@ module.exports = {
             response.data.on('end', () => {
                 clearInterval(interval);
                 msg.edit(data);
-                // TODO: count the tokens (we need to recreate the ChatCompletionRequestMessage Array)
-                //messagesData.push({ "author": "assistant", "content": data });
-                //count_tokens(messagesData, 
+                // add the response to the messagesData array
+                messagesData.push({ author: '1043905318867980530', content: data });
+                count_tokens(messagesToChatCompletionRequestMessage(messagesData), getUser(messagesData), Model);
             });
 
         }

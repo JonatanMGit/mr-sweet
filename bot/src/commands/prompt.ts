@@ -3,7 +3,7 @@ import { openai, gpt4Model, gpt3Model, defaultSystemPrompt, count_tokens, Messag
 import { ChatCompletionRequestMessage } from 'openai';
 import { RateLimiter } from 'discord.js-rate-limiter';
 let rateLimiter = new RateLimiter(1, 10000);
-import { getResponse } from '../ai';
+import { getResponse, messagesToChatCompletionRequestMessage } from '../ai';
 import { ChatInputCommandInteraction, CommandInteraction } from 'discord.js';
 
 
@@ -68,8 +68,10 @@ module.exports = {
         response.data.on('end', () => {
             clearInterval(interval);
             interaction.editReply(data);
-            message.push({ "author": "assistant", "content": data });
-            count_tokens(message, interaction.user.id, model);
+            // push the response to the message array to also count the tokens for the response
+            message.push({ author: '1043905318867980530', content: data });
+            console.log(messagesToChatCompletionRequestMessage(message));
+            count_tokens(messagesToChatCompletionRequestMessage(message), interaction.user.id, model);
         });
     },
 };
