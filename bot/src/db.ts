@@ -18,6 +18,7 @@ export type User = {
     commands_used: number
     v3tokens_used: number
     v4tokens_used: number
+    costs: number
 }
 export type Settings = {
     Guild: string,
