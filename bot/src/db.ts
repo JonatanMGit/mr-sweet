@@ -24,6 +24,11 @@ export type Settings = {
     enabled_commands: string,
 }
 
+export type Guild = {
+    id: number,
+    name: string
+}
+
 // create the guild table
 export const Guild = sequelize.define('Guild', {
     // Model attributes are defined here
@@ -129,13 +134,16 @@ export const saveUser = async (options: User) => {
         );
 }
 
-export const getUsers = async () => {
+export const getUsers = async (): Promise<User[]> => {
     sequelize.sync();
     const users = await User.findAll();
+    users.forEach(user => {
+        user = user.dataValues;
+    });
     return users;
 }
 
-export const getUser = async (id) => {
+export const getUser = async (id: number | string): Promise<User> => {
     sequelize.sync();
     const user
         = await User.findOne({
@@ -210,7 +218,7 @@ export const removeGuild = async (id) => {
     }
 }
 
-export const getGuild = async (id) => {
+export const getGuild = async (id: string): Promise<Guild> => {
     sequelize.sync();
     const guild
         = await Guild
@@ -222,7 +230,7 @@ export const getGuild = async (id) => {
     return guild;
 }
 
-export const getGuilds = async () => {
+export const getGuilds = async (): Promise<Guild[]> => {
     sequelize.sync();
     const guilds = await Guild.findAll();
     return guilds;
@@ -273,6 +281,12 @@ export const getSettings = async (guildId: string) => {
                     id: guildId,
                 }
             });
+    return settings;
+}
+
+export const getAllSettings = async (): Promise<Settings[]> => {
+    sequelize.sync();
+    const settings = await Settings.findAll();
     return settings;
 }
 
@@ -336,7 +350,7 @@ export const create_user = async (id) => {
 }
 
 
-export const count_v3tokens = async (id, tokens) => {
+export const count_v3tokens = async (id: string, tokens: number) => {
     sequelize.sync();
     const user
         = await User
@@ -354,7 +368,7 @@ export const count_v3tokens = async (id, tokens) => {
     }
 }
 
-export const count_v4tokens = async (id, tokens) => {
+export const count_v4tokens = async (id: string, tokens: number) => {
     sequelize.sync();
     const user
         = await User
