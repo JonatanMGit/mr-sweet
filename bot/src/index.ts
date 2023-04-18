@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Events, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, Events, Collection, DiscordAPIError } from 'discord.js';
 require('dotenv').config();
 import { prepareGlobalCommands, loadCommands, registerCommands } from './commandUtils';
 import handleEvents from './eventHandler';
@@ -27,3 +27,18 @@ client.once(Events.ClientReady, () => {
 });
 
 client.login(process.env.TOKEN);
+
+process.on('uncaughtException', (err) => {
+    if (err instanceof DiscordAPIError) {
+        if (err.code == 10062) {
+            console.error("Missing permissions to execute command");
+        } else if (err.code == 40060) {
+            console.error("Interaction failed");
+        }
+        console.error(err);
+    } else {
+        console.error(err);
+        process.exit(1);
+    }
+});
+

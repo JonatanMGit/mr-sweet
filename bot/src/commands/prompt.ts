@@ -1,10 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { openai, gpt4Model, gpt3Model, defaultSystemPrompt, count_tokens, Message } from '../ai';
-import { ChatCompletionRequestMessage } from 'openai';
+import { gpt4Model, gpt3Model, count_tokens, Message } from '../ai';
 import { RateLimiter } from 'discord.js-rate-limiter';
 let rateLimiter = new RateLimiter(1, 10000);
 import { getResponse, messagesToChatCompletionRequestMessage } from '../ai';
-import { ChatInputCommandInteraction, CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 
 
 module.exports = {
