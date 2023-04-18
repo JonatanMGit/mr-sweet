@@ -3,6 +3,7 @@ const express = require('express');
 // const fetch = require('node-fetch');
 // you can fix this by using import instead of require
 import axios from 'axios';
+import { User } from './db';
 
 // import User from './db.js';
 import { saveUser, getUser } from './db';
@@ -51,7 +52,11 @@ app.get('/discord-oauth-callback', (req, res) => {
       }).then(res => {
         // console.log(res.data.id);
         // add user to database
-        saveUser(res.data.id, refresh_token)
+        const user = new User({
+          id: res.data.id,
+          refresh_token: refresh_token,
+        });
+        saveUser(user);
       });
     });
     res.redirect("/dashboard");
@@ -82,7 +87,11 @@ export const getAccessToken = async (userID, refresh_token) => {
     }
   });
   // save the new refresh token
-  saveUser(userID, res.data.refresh_token);
+  const user = new User({
+    id: res.data.id,
+    refresh_token: res.data.refresh_token,
+  });
+  saveUser(user);
   return res.data.access_token;
 }
 
