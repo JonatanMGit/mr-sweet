@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { ChatInputCommandInteraction } from 'discord.js';
 
 module.exports = {
     global: true,
@@ -13,10 +14,12 @@ module.exports = {
             option.setName('attachment')
                 .setDescription('The attachment to send')
                 .setRequired(false)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const input = interaction.options.getString('input');
         const attachment = interaction.options.getAttachment('attachment');
         let message = { allowedMentions: {} };
+        // defer reply to allow for file upload if it takes longer than 3 seconds
+        await interaction.deferReply({ ephemeral: true });
         /*
         if (attachment && interaction.author.id !== '1') {
             await interaction.reply({ content: 'This feature is reserved for Mr Sweet pro users only!', ephemeral: true });
@@ -33,6 +36,6 @@ module.exports = {
         await interaction.channel.send(message);
 
         // finish the interaction
-        await interaction.reply({ content: 'Sent!', ephemeral: true });
+        await interaction.deleteReply();
     },
 };
