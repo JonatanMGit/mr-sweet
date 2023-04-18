@@ -9,7 +9,7 @@ const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
-export function loadCommands(client: CustomClient) {
+export async function loadCommands(client: CustomClient) {
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
@@ -22,7 +22,7 @@ export function loadCommands(client: CustomClient) {
     }
 }
 
-export function registerCommands(client: CustomClient) {
+export async function registerCommands(client: CustomClient) {
     //register every slash command in the commands folder if command.global is false
     const commands = [];
     console.log("Starting to register commands");
@@ -51,7 +51,7 @@ export function registerCommands(client: CustomClient) {
 }
 
 // delete all global commands
-export function prepareGlobalCommands(client: CustomClient) {
+export async function prepareGlobalCommands(client: CustomClient) {
     //register every glboal slash command in the commands folder if command.global is true
     const commands = [];
     console.log("Starting to register commands");
