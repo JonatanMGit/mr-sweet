@@ -2,7 +2,8 @@ import path from "path";
 import fs from "fs";
 import { CustomClient } from "./index";
 
-export default function handleEvents(client: CustomClient) {
+export default async function handleEvents(client: CustomClient) {
+    console.log("Loading events...");
     // Handle events
     const eventsPath = path.join(__dirname, 'events');
     const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));

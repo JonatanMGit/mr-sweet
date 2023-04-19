@@ -6,20 +6,17 @@ import handleEvents from './eventHandler';
 export interface CustomClient extends Client {
     commands: Collection<string, any>
 }
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.GuildMessages] }) as CustomClient;
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.AutoModerationExecution, GatewayIntentBits.GuildMessages, GatewayIntentBits.AutoModerationConfiguration] }) as CustomClient;
 export default client;
 client.commands = new Collection();
 
-// make it async so that the bot can already start while the commands are being registered
-(async () => {
+// reload commands
+handleEvents(client);
+registerCommands(client);
+loadCommands(client);
+prepareGlobalCommands(client);
 
-    // reload commands
-    registerCommands(client);
-    loadCommands(client);
-    prepareGlobalCommands(client);
-    handleEvents(client);
 
-})();
 
 // Notify when the bot is ready
 client.once(Events.ClientReady, () => {
