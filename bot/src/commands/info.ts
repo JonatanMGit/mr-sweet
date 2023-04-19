@@ -1,4 +1,5 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
+import { SlashCommandBuilder, EmbedBuilder } from '@discordjs/builders';
+import { User } from 'discord.js';
 
 module.exports = {
     global: true,
@@ -42,71 +43,63 @@ username
         */
 
         if (subcommand === 'user') {
-            const user = interaction.options.getUser('target');
-            const message = `Username: ${user.username}
-            \nID: ${user.id}
-            \nDiscriminator: ${user.discriminator}
-            \nCreated at: ${user.createdAt}
-            \nBot: ${user.bot}
-            \nSystem: ${user.system}
-            \nFlags: ${user.flags}
-            \nAvatar: ${user.avatar}
-            \nDefault avatar: ${user.defaultAvatarURL}
-            \nHex accent color: ${user.hexAccentColor}
-            \nAccent color: ${user.accentColor}
-            \nBanner: ${user.banner}
-            \nDM channel: ${user.dmChannel}
-            \nPartial: ${user.partial}
-            \nCreated at timestamp: ${user.createdTimestamp}`;
-            await interaction.reply(message, { allowedMentions: { parse: [] } });
+            const user = interaction.options.getUser('target') as User;
+            // create an embed with the user's info:
+            // username, discriminator, id, avatar url, creation date, flags (badges/bot) , roles
+            const roles = interaction.guild.members.cache.get(user.id).roles.cache.map(role => role.toString()).join(' ');
+
+            // format the flags into a string so that it can be displayed in the embed
+            const flags = user.flags.toArray().length ? user.flags.toArray().map(flag => flag.replace(/_/g, ' ').toLowerCase()).join(', ') : 'None';
+
+            // detect if the user hasn't set an avatar and then set the avatar url to the default avatar url instead
+            const avatarURL = user.avatarURL() ? user.avatarURL() : user.defaultAvatarURL;
+
+            const embed = (new EmbedBuilder() as EmbedBuilder)
+                .setTitle(`${user.username}#${user.discriminator}`)
+                .setDescription(`ID: ${user.id}`)
+                .setColor(0x00ff00)
+                .setThumbnail(avatarURL)
+                .addFields(
+                    { name: 'Creation Date', value: `<t:${Math.floor(user.createdTimestamp / 1000)}:R>` },
+                    { name: 'Flags', value: flags },
+                    { name: 'Roles', value: roles },
+                );
+
+
+            await interaction.reply({ embeds: [embed] });
         } else if (subcommand === 'server') {
-            const message = `Name: ${interaction.guild.name}
-            \nID: ${interaction.guild.id}
-            \nOwner: ${interaction.guild.owner}
-            \nCreated at: ${interaction.guild.createdAt}
-            \nCreated at timestamp: ${interaction.guild.createdTimestamp}
-            \nRegion: ${interaction.guild.region}
-            \nMember count: ${interaction.guild.memberCount}
-            \nMax members: ${interaction.guild.maximumMembers}
-            \nMax presences: ${interaction.guild.maximumPresences}
-            \nMax video channel users: ${interaction.guild.maximumVideoChannelUsers}
-            \nPreferred locale: ${interaction.guild.preferredLocale}
-            \nVerification level: ${interaction.guild.verificationLevel}
-            \nDescription: ${interaction.guild.description}
-            \nFeatures: ${interaction.guild.features}
-            \nSplash: ${interaction.guild.splash}
-            \nDiscovery splash: ${interaction.guild.discoverySplash}
-            \nBanner: ${interaction.guild.banner}
-            \nRules channel: ${interaction.guild.rulesChannel}
-            \nPublic updates channel: ${interaction.guild.publicUpdatesChannel}
-            \nVanity url code: ${interaction.guild.vanityURLCode}
-            \nVanity url uses: ${interaction.guild.vanityURLUses}
-            \nPartnered: ${interaction.guild.partnered}
-            \nVerified: ${interaction.guild.verified}
-            \nNSFW level: ${interaction.guild.nsfwLevel}
-            \nOwner ID: ${interaction.guild.ownerId}
-            \nSystem channel flags: ${interaction.guild.systemChannelFlags}
-            \nSystem channel: ${interaction.guild.systemChannel}
-            \nWidget enabled: ${interaction.guild.widgetEnabled}
-            \nWidget channel: ${interaction.guild.widgetChannel}
-            \nMax video channel users: ${interaction.guild.maximumVideoChannelUsers}
-            \nApplication ID: ${interaction.guild.applicationId}
-            \nAFK channel: ${interaction.guild.afkChannel}
-            \nAFK channel ID: ${interaction.guild.afkChannelId}
-            \nAFK timeout: ${interaction.guild.afkTimeout}
-            \nDefault message notifications: ${interaction.guild.defaultMessageNotifications}
-            \nExplicit content filter: ${interaction.guild.explicitContentFilter}
-            \nMFA level: ${interaction.guild.mfaLevel}
-            \nPremium subscription count: ${interaction.guild.premiumSubscriptionCount}
-            \nPremium tier: ${interaction.guild.premiumTier}
-            \nRules channel ID: ${interaction.guild.rulesChannelId}
-            \nPublic updates channel ID: ${interaction.guild.publicUpdatesChannelId}
-            \nSystem channel ID: ${interaction.guild.systemChannelId}
-            \nWidget channel ID: ${interaction.guild.widgetChannelId}
-            \nUnavailable: ${interaction.guild.unavailable}
-            \nLarge: ${interaction.guild.large}
-            `
-            await interaction.reply(message, { allowedMentions: { parse: [] } });
+            // create an embed with the server's info:
+            const embed = (new EmbedBuilder() as EmbedBuilder)
+                .setTitle(`${interaction.guild.name}`)
+                .setDescription(`ID: ${interaction.guild.id}`)
+                .setColor(0x00ff00)
+                .setThumbnail(interaction.guild.iconURL())
+                .addFields(
+                    { name: 'Creation Date', value: `<t:${Math.floor(interaction.guild.createdTimestamp / 1000)}:R>` },
+                    { name: 'Owner', value: `<@${interaction.guild.ownerId}>` },
+                    { name: 'Members', value: `${interaction.guild.memberCount}` },
+                    { name: 'Channels', value: `${interaction.guild.channels.cache.size}` },
+                    { name: 'Roles', value: `${interaction.guild.roles.cache.size}` },
+                    { name: 'Emojis', value: `${interaction.guild.emojis.cache.size}` },
+                    { name: 'Boosts', value: `${interaction.guild.premiumSubscriptionCount}` },
+                    { name: 'Boost Level', value: `${interaction.guild.premiumTier}` },
+                    { name: 'Verification Level', value: `${interaction.guild.verificationLevel}` },
+                    { name: 'Explicit Content Filter', value: `${interaction.guild.explicitContentFilter}` },
+                    { name: 'Features', value: `${interaction.guild.features.length ? interaction.guild.features.map(feature => feature.replace(/_/g, ' ').toLowerCase()).join(', ') : 'None'}` },
+                    { name: 'Rules Channel', value: `${interaction.guild.rulesChannel ? `<#${interaction.guild.rulesChannel.id}>` : 'None'}` },
+                    { name: 'Public Updates Channel', value: `${interaction.guild.publicUpdatesChannel ? `<#${interaction.guild.publicUpdatesChannel.id}>` : 'None'}` },
+                    { name: 'System Channel', value: `${interaction.guild.systemChannel ? `<#${interaction.guild.systemChannel.id}>` : 'None'}` },
+                    { name: 'Description', value: `${interaction.guild.description ? interaction.guild.description : 'None'}` },
+                    { name: 'Banner', value: `${interaction.guild.banner ? `[Click Here](${interaction.guild.bannerURL() + "?size=4096"})` : 'None'}` },
+                    { name: 'Splash', value: `${interaction.guild.splash ? `[Click Here](${interaction.guild.splashURL() + "?size=4096"})` : 'None'}` },
+                    { name: 'Discovery Splash', value: `${interaction.guild.discoverySplash ? `[Click Here](${interaction.guild.discoverySplashURL()})` : 'None'}` },
+                    { name: 'AFK Channel', value: `${interaction.guild.afkChannel ? `<#${interaction.guild.afkChannel.id}>` : 'None'}` },
+                    { name: 'AFK Timeout', value: `${interaction.guild.afkTimeout}` },
+                    { name: 'Maximum Bitrate', value: `${interaction.guild.maximumBitrate}` },
+                    { name: 'Maximum Members', value: `${interaction.guild.maximumMembers}` }
+                );
+
+            interaction.reply({ embeds: [embed] });
 
         }
 
