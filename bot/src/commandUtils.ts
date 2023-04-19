@@ -29,7 +29,12 @@ export async function registerCommands(client: CustomClient) {
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);
 
+        if (command.data.toJSON().name !== "eval" && process.env.NODE_ENV === "production") {
+            continue;
+        }
+
         if (command.global === false) {
+
             commands.push(command.data.toJSON());
         }
     }
