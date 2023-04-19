@@ -63,6 +63,13 @@ username
                     { name: 'Creation Date', value: `<t:${Math.floor(user.createdTimestamp / 1000)}:R>` },
                     { name: 'Flags', value: flags },
                     { name: 'Roles', value: roles },
+                    { name: 'Bot', value: `${user.bot}` },
+                    { name: 'System', value: `${user.system}` },
+                    { name: 'Partial', value: `${user.partial}` },
+                    {
+                        name: 'Avatar URL', value: `[Click Here](${user.avatarURL() ? user.avatarURL() : user.defaultAvatarURL + '?size=4096'})`,
+                    },
+                    { name: 'Default Avatar URL', value: `[Click Here](${user.defaultAvatarURL + '?size=4096'})` },
                 );
 
 
