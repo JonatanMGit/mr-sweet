@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-const Markov = require('js-markov');
+import { ChatInputCommandInteraction, Message } from 'discord.js';
+import Markov from 'js-markov';
 var markov = new Markov();
 module.exports = {
     global: true,
@@ -10,8 +11,10 @@ module.exports = {
             option.setName('user')
                 .setDescription('The user to simulate')
                 .setRequired(true)),
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user');
+
+        interaction.reply('Fetching messages...');
 
         // use the user to simulate what they would say by looking at their previous messages
         // it should function the same as UserSim on reddit but for discord
@@ -19,21 +22,31 @@ module.exports = {
         // use markov chains to generate the messages
 
 
-        // get the last 500 messages from the user if possible
-        const messages = await interaction.channel.messages.fetch({ limit: 100, before: interaction.id });
-        // fetch 100 more messages if there are after the last 100
-        const moreMessages = await interaction.channel.messages.fetch({ limit: 100, before: messages.last().id });
-        // add the messages to the messages array
-        messages.concat(moreMessages);
-        // filter out the messages from the user
+        // get the last 500 messages from the user
+        // repeat fetching the last 100 messages until we have 500 messages or we repeated it 10 times
+        let userMessages = await interaction.channel.messages.fetch({ limit: 100, before: interaction.id });
+        let lastMessageId = userMessages.lastKey();
+        userMessages = userMessages.filter(message => message.author.id === user.id);
+        let i = 0;
+        while (userMessages.size < 200 && i < 10) {
+            let moreMessages = await interaction.channel.messages.fetch({ limit: 100, before: lastMessageId });
+            lastMessageId = moreMessages.last().id;
+            moreMessages = moreMessages.filter(message => message.author.id === user.id);
 
+            userMessages = userMessages.concat(moreMessages);
+            console.log(userMessages.size);
+            console.log(lastMessageId);
+            i++;
+        }
+        console.log(userMessages.size);
+        console.log(lastMessageId);
 
-        const userMessages = messages.filter(message => message.author.id === user.id);
+        interaction.editReply('Training Mr Sweet...');
 
         // check if there are any messages from the user
         if (userMessages.size === 0) {
             // reply with an error message ephemerally
-            await interaction.reply({ content: 'There are no recent messages from this user!', ephemeral: true });
+            await interaction.editReply('There are no recent messages from this user!');
             return;
         }
 
@@ -46,18 +59,21 @@ module.exports = {
 
         // check if its a valid message and not empty
         if (message && message.length > 0) {
+            // read the length of the content
+            let contentLength = 0;
+            userMessages.forEach(message => {
+                contentLength += message.content.length;
+            });
             // reply with the message "user said: message"
-            await interaction.reply(`${user.username} would say: ${message} ` + markov.generateRandom() + ". " + markov.generateRandom());
+            const repMessage = `${user.username} would say: ${message}\n${userMessages.size} messages were used to generate this message with an average message length of ${(contentLength / userMessages.size).toFixed(0)} characters taken from the last ${i * 100} messages.`;
+
+
+            await interaction.editReply({ content: repMessage, allowedMentions: { users: [] } });
         } else {
             // reply with an error message ephemerally
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            await interaction.editReply({
+                content: `No Messages were found! ${message.length}`
+            });
         }
-
-
-
-
-
-
-
     },
 };
