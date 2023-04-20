@@ -1,4 +1,4 @@
-import noblox from 'noblox.js';
+import noblox, { ThumbnailRequest, GroupIconSize } from 'noblox.js';
 
 export async function getRobloxUserInfo(userId: number) {
     const user = await noblox.getPlayerInfo(userId);
@@ -41,6 +41,14 @@ module.exports = {
                 .addStringOption(option =>
                     option.setName('target')
                         .setDescription('The user to get information about')
+                        .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('group')
+                .setDescription('Get information about a group')
+                .addIntegerOption(option =>
+                    option.setName('target')
+                        .setDescription('The group ID to get information about')
                         .setRequired(true))),
     async execute(interaction: ChatInputCommandInteraction) {
         if (interaction.options.getSubcommand() === 'user') {
@@ -49,6 +57,11 @@ module.exports = {
 
             // get the user
             const id = await getUserID(target);
+
+            if (!id) {
+                await interaction.reply({ content: 'User not found', ephemeral: true });
+                return;
+            }
 
             // get the user info
             const user = await getRobloxUserInfo(id);
@@ -62,8 +75,7 @@ module.exports = {
                 oldNames = "None";
             }
 
-            console.log(avatar);
-            const footer = { text: 'Roblox', iconURL: 'https://www.roblox.com/Thumbs/Avatar.ashx?x=100&y=100&Format=Png&username=Roblox' } as EmbedFooterOptions;
+            // console.log(avatar);
             const embed = (new EmbedBuilder() as EmbedBuilder)
                 .setTitle(`${user.username}`)
                 .setDescription(`ID: ${id}`)
@@ -87,6 +99,59 @@ module.exports = {
                 .setTimestamp(new Date())
 
             await interaction.reply({ embeds: [embed] });
+        } else if (interaction.options.getSubcommand() === 'group') {
+            const id = interaction.options.getInteger('target') as number;
+
+            const group = await noblox.getGroup(id);
+
+            await interaction.deferReply();
+
+
+            if (!group) {
+                await interaction.editReply('Group not found');
+                return;
+            }
+
+            const thumbnail = {
+                targetId: id,
+                size: "420x420" as GroupIconSize,
+                type: "GroupIcon",
+            } as ThumbnailRequest;
+            /*
+            [
+  {
+    requestId: null,
+    errorCode: 0,
+    errorMessage: '',
+    targetId: 8144018,
+    state: 'Completed',
+    imageUrl: 'https://tr.rbxcdn.com/dcf32a4856341a90d50bd927727c41b7/420/420/Image/Png'
+  }
+]
+            */
+            const icon = await noblox.getThumbnails([thumbnail] as ThumbnailRequest[]);
+            const iconURL = icon[0].imageUrl;
+
+
+            // console.log(iconURL);
+
+            const embed = (new EmbedBuilder() as EmbedBuilder)
+                .setTitle(`${group.name}`)
+                .setDescription(`ID: ${id}`)
+                .setColor(0x00ff00)
+                .setImage(iconURL)
+                .addFields([
+                    { name: 'Description', value: group.description, inline: true },
+                    { name: 'Owner', value: group.owner.username, inline: true },
+                    { name: 'Member Count', value: group.memberCount.toString(), inline: true },
+                    { name: 'Public Entry Allowed', value: group.publicEntryAllowed.toString(), inline: true },
+                    { name: 'Shout', value: group.shout.body, inline: false },
+
+                    { name: 'Shout Poster', value: group.shout.poster.username, inline: true },
+                    { name: 'Shout Posted', value: "<t:" + Math.floor(group.shout.updated.getTime() / 1000) + ":R>", inline: true },
+                ])
+
+            await interaction.editReply({ embeds: [embed] });
         }
     }
 }
