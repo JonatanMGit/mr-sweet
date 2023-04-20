@@ -277,22 +277,39 @@ module.exports = {
 
             await interaction.editReply({ embeds: [embed] });
 
-            const select = new StringSelectMenuBuilder()
-                .setCustomId('outfit_select')
-                .setPlaceholder('Select an outfit')
-                .addOptions(outfits.map((outfit) => {
-                    return {
-                        label: outfit.name,
-                        value: (outfit.id.toString() + ',' + outfit.name),
-                        description: outfit.isEditable ? 'Editable' : 'Not Editable',
-                        default: false
-                    }
-                }))
+            const MAX_OPTIONS = 25;
+            const outfitsCopy = [...outfits]; // make a copy of the original array
 
-            const row = new ActionRowBuilder<StringSelectMenuBuilder>()
-                .addComponents(select)
+            let selectMenus = [];
 
-            await interaction.editReply({ embeds: [embed], components: [row] });
+            for (let i = 0; outfitsCopy.length > 0; i++) {
+                const currentOutfits = outfitsCopy.splice(0, MAX_OPTIONS);
+
+                const select = new StringSelectMenuBuilder()
+                    .setCustomId(`outfit_select${i}`)
+                    .setPlaceholder('Select an outfit')
+                    .addOptions(currentOutfits.map((outfit) => {
+                        return {
+                            label: outfit.name,
+                            value: (outfit.id.toString() + ',' + outfit.name),
+                            description: outfit.isEditable ? 'Editable' : 'Not Editable',
+                            default: false
+                        }
+                    }));
+
+                selectMenus.push(select);
+            }
+            // console.log(selectMenus.length)
+
+            // add each select menu to a row
+            const rows = [];
+            for (let i = 0; i < selectMenus.length; i++) {
+                const row = new ActionRowBuilder<StringSelectMenuBuilder>()
+                    .addComponents(selectMenus[i]);
+                rows.push(row);
+            }
+
+            await interaction.editReply({ embeds: [embed], components: rows });
 
 
         } else {

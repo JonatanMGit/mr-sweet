@@ -29,7 +29,7 @@ module.exports = {
         else if (interaction.isStringSelectMenu()) {
             (interaction as StringSelectMenuInteraction);
             // TODO: load commands from seperate files
-            if (interaction.customId === 'outfit_select') {
+            if (interaction.customId.startsWith('outfit_select')) {
                 const command = client.commands.get('roblox');
 
                 command.handleSelectMenu(interaction);
