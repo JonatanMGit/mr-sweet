@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Events, Interaction, MessageContextMenuCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, Events, Interaction, MessageContextMenuCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
 import { CustomClient } from '..';
 
 module.exports = {
@@ -25,6 +25,16 @@ module.exports = {
             await interaction.reply({ content: message, ephemeral: true });
             // TODO: load commands from seperate files
 
+        }
+        else if (interaction.isStringSelectMenu()) {
+            (interaction as StringSelectMenuInteraction);
+            // TODO: load commands from seperate files
+            if (interaction.customId === 'outfit_select') {
+                const command = client.commands.get('roblox');
+
+                command.handleSelectMenu(interaction);
+
+            }
         }
     },
 };
