@@ -1,4 +1,4 @@
-import noblox, { ThumbnailRequest, GroupIconSize, AvatarOutfit, AvatarOutfitDetails } from 'noblox.js';
+import noblox, { ThumbnailRequest, GroupIconSize } from 'noblox.js';
 
 export async function getRobloxUserInfo(userId: number) {
     const user = await noblox.getPlayerInfo(userId);
@@ -27,7 +27,7 @@ export async function getUserID(identifier: string | number): Promise<number> {
 }
 
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder, EmbedFooterOptions, SelectMenuBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, UserSelectMenuBuilder } from 'discord.js';
+import { ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from 'discord.js';
 
 module.exports = {
     global: false,
