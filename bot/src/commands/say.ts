@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageCreateOptions } from 'discord.js';
 
 module.exports = {
     global: true,
@@ -13,11 +13,17 @@ module.exports = {
         .addAttachmentOption(option =>
             option.setName('attachment')
                 .setDescription('The attachment to send')
+                .setRequired(false))
+        // the message to reply to
+        .addIntegerOption(option =>
+            option.setName('reply')
+                .setDescription('The message id to reply to')
                 .setRequired(false)),
     async execute(interaction: ChatInputCommandInteraction) {
         const input = interaction.options.getString('input');
         const attachment = interaction.options.getAttachment('attachment');
-        let message = { allowedMentions: {} };
+        const reply = interaction.options.getString('reply');
+        let message = { allowedMentions: {} } as MessageCreateOptions;
         // defer reply to allow for file upload if it takes longer than 3 seconds
         await interaction.deferReply({ ephemeral: true });
         /*
@@ -28,12 +34,24 @@ module.exports = {
         */
         // add each option to the message inidividually and allow one to be missing
         if (input) {
-            message['content'] = input;
+            message.content = input;
         }
         if (attachment) {
-            message['files'] = [attachment];
+            message.files = [attachment];
         }
-        await interaction.channel.send(message);
+        if (reply) {
+            message.reply = {
+                messageReference: reply
+            }
+        }
+
+        // detect if the message is empty
+        if (!message.content && !message.files) {
+            await interaction.reply({ content: 'You must provide some input!', ephemeral: true });
+            return;
+        }
+
+        await interaction.channel.send(message)
 
         // finish the interaction
         await interaction.deleteReply();
