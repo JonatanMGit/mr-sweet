@@ -15,7 +15,7 @@ module.exports = {
                 .setDescription('The attachment to send')
                 .setRequired(false))
         // the message to reply to
-        .addIntegerOption(option =>
+        .addStringOption(option =>
             option.setName('reply')
                 .setDescription('The message id to reply to')
                 .setRequired(false)),
