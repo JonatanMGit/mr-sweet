@@ -3,7 +3,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 module.exports = {
     global: true,
     data: new SlashCommandBuilder()
-        .setName('swt')
+        .setName('dserver')
         .setDescription('MrSweet discord server'),
     async execute(interaction) {
         await interaction.reply({
