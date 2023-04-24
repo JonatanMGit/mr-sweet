@@ -36,7 +36,7 @@
     "gtts": "^0.2.1",
     "js-markov": "^3.0.3",
     "noblox.js": "^4.14.1",
-    "node-fetch": "^2.6.9",
+    "node-fetch": "^3.3.1",
     "openai": "^3.2.1"
   },
   "devDependencies": {
