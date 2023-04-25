@@ -25,7 +25,7 @@ const DISCORD_APPLICATIONS = [
 
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { APIApplicationCommandOptionChoice, CommandInteraction } from 'discord.js';
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch");
 let choises = [];
 
 for (const application of DISCORD_APPLICATIONS) {

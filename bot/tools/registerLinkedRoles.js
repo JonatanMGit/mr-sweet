@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 require('dotenv').config();
 /**
  * Register the metadata to be stored by Discord. This should be a one time action.
