@@ -9,32 +9,34 @@
   <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2023">
   <img alt="Discord" src="https://img.shields.io/discord/813852446069751838?label=Online%20Users">
 
-> Mr Sweet is a discord bot that is intended to replace most bots. It has a web dashboard and is fully modular.
+## Features
+
+- Web dashboard
+- Fully modular
+- Easy to set up
+- Low latency
 
 ## Installation
 
-The Bot is split into two parts, the bot itself and the website. The bot is in the `bot` folder and the website is in the `web`
-folder.
-
 ### Bot
 
-```sh
-npm install
-```
+To install the bot:
 
-Change the .env.example to .env and fill in the values.
+1. Clone the repository
+2. Navigate to the `bot` folder
+3. Run `npm install`
+4. Rename `.env.example` to `.env` and fill in the values
+5. Navigate to the `build` folder
+6. Run `npm run build`
+7. Start the bot by running `npm start`
 
-```sh
-cd build
-npm run build
-npm start
-```
+### Dashboard
 
-## Dashboard
+The dashboard is still under development.
 
-<!-- tbd -->
+## Contributing
 
-The dashboard is currently not ready.
+Contributions, issues, and feature requests are welcome. Please check out the [contributing guide](https://github.com/JonatanMGit/mr-sweet/blob/main/CONTRIBUTING.md) for more information.
 
 ## Author
 
@@ -46,11 +48,8 @@ The dashboard is currently not ready.
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/JonatanMGit/mr-sweet/issues). You can also take a look at the [contributing guide](https://github.com/JonatanMGit/mr-sweet/blob/main/CONTRIBUTING.md).
 
+This project is licensed under the [AGPL](https://github.com/JonatanMGit/mr-sweet/blob/main/LICENSE).
+
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-
-## 📝 License
-
-Copyright © 2023 [Jonatan_M](https://github.com/JonatanMGit).<br />
-This project is [AGPL](https://github.com/JonatanMGit/mr-sweet/blob/main/LICENSE) licensed.

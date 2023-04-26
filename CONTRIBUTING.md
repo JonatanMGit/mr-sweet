@@ -7,7 +7,8 @@ Thank you for considering contributing to Mr Sweet! This document will help guid
 - Fork the repository on GitHub
 - Clone the forked repository locally, use Codespaces or any ther preferred method
 - Install the dependencies with `npm install` in the root of the project
-- The bot is in the `bot` folder and the website is in the `website` folder
+- The bot is in the `bot` folder and the website is in the `web` folder
+- If you are working on the bot, you can run it with `npm run dev` in the `bot` folder and it will automatically restart when you make changes
 - Create a new branch for your contribution
 - Make your changes and test them locally
 - Commit your changes with a descriptive commit message
