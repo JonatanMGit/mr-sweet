@@ -1,5 +1,5 @@
 import { Events, AutoModerationActionExecution, TextChannel } from 'discord.js';
-
+import { generateFakeData } from '../commands/hack';
 // list of messages to respond
 const messages = [
     "Wow, thats inappropriate!",
@@ -15,7 +15,9 @@ const messages = [
     "https://media.tenor.com/32zLXcYBbH8AAAAd/speech-bubble.gif",
     "wts",
     "https://tenor.com/de/view/family-guy-fart-meg-peter-gif-8122927",
-    "https://media.discordapp.net/attachments/813852446069751842/1079177556537905264/40dffb8650781dabdae0b21f72da71ce.jpg"
+    "https://media.discordapp.net/attachments/813852446069751842/1079177556537905264/40dffb8650781dabdae0b21f72da71ce.jpg",
+    "1",
+    "1"
 ];
 
 
@@ -39,7 +41,11 @@ module.exports = {
                 return;
             }
             try {
-                await message.reply(messages[Math.floor(Math.random() * messages.length)]);
+                let reply = messages[Math.floor(Math.random() * messages.length)];
+                if (reply === "1") {
+                    reply = await generateFakeData(message.author.id, true);
+                }
+                await message.reply(reply);
             } catch (error) {
                 console.error(error);
             }
