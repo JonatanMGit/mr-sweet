@@ -53,7 +53,7 @@ module.exports = {
                 .setFooter({ text: `👍 ${definition.list[0].thumbs_up} 👎 ${definition.list[0].thumbs_down}` })
                 .setColor('Random')
                 .setAuthor({
-                    "name": definition.list[0].author, "url": "https://www.urbandictionary.com/author.php?author=" + definition.list[0].author,
+                    "name": definition.list[0].author, "url": "https://www.urbandictionary.com/author.php?author=" + encodeURIComponent(definition.list[0].author),
                     "iconURL": "https://www.urbandictionary.com/android-chrome-512x512.png"
                 })
             await interaction.reply({ embeds: [embed] });
@@ -82,7 +82,7 @@ module.exports = {
                 .setFooter({ text: `👍 ${random.list[0].thumbs_up} 👎 ${random.list[0].thumbs_down}` })
                 .setColor('Random')
                 .setAuthor({
-                    "name": random.list[0].author, "url": "https://www.urbandictionary.com/author.php?author=" + random.list[0].author,
+                    "name": random.list[0].author, "url": "https://www.urbandictionary.com/author.php?author=" + encodeURIComponent(random.list[0].author),
                     "iconURL": "https://www.urbandictionary.com/android-chrome-512x512.png"
                 })
             await interaction.reply({ embeds: [embed] });
