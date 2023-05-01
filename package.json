@@ -6,7 +6,7 @@
     ],
     "dependencies": {
         "bad-words": "^3.0.4",
-        "sequelize": "^6.31.0",
+        "sequelize": "^6.31.1",
         "sqlite3": "^5.1.6"
     },
     "scripts": {
