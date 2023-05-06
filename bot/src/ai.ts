@@ -4,7 +4,7 @@ import { ChatCompletionRequestMessage } from 'openai';
 import { Readable } from 'stream'
 import { count_openai_request, count_v3tokens, count_v4tokens } from './db';
 import { encoding_for_model } from "@dqbd/tiktoken";
-
+import * as tf from '@tensorflow/tfjs-node-gpu';
 export interface CreateChatCompletionResponse extends Readable {
 }
 
@@ -123,4 +123,84 @@ export function getUser(messages: Message[]): string {
         }
     }
     return user;
+}
+
+export async function simulateText(originalText: string): Promise<string> {
+    // Define some hyperparameters for the model
+    const maxLen = 40; // Maximum length of a sequence
+    const step = 3; // The step between each sequence
+
+    // Convert the input text into lowercase and remove all non-alphanumeric characters
+    const text = originalText.toLowerCase().replace(/[^0-9a-z]/g, ' ');
+
+    // Extract all unique characters from the input text
+    const chars = [...new Set(text)];
+
+    // Create a dictionary that maps each character to a numerical ID
+    const charIds = new Map(chars.map((c, i) => [c, i]));
+
+    // Generate sequences of characters from the input text
+    const sequences = [];
+    const nextChars = [];
+    for (let i = 0; i < text.length - maxLen; i += step) {
+        const seq = text.slice(i, i + maxLen);
+        const next = text.charAt(i + maxLen);
+        sequences.push(seq);
+        nextChars.push(next);
+    }
+
+    // Convert the sequences and nextChars arrays into tensors
+    const inputSeqs = tf.tensor2d(
+        sequences.map(seq => [...seq].map(c => charIds.get(c))),
+        [sequences.length, maxLen]
+    );
+    const nextCharIds = nextChars.map(c => charIds.get(c));
+    const output = tf.oneHot(tf.tensor1d(nextCharIds, 'int32'), chars.length);
+
+    // Define the model architecture
+    const model = tf.sequential();
+    model.add(tf.layers.embedding({
+        inputDim: chars.length,
+        outputDim: 16,
+        inputLength: maxLen
+    }));
+    model.add(tf.layers.lstm({ units: 128 }));
+    model.add(tf.layers.dense({ units: chars.length, activation: 'softmax' }));
+
+    // Compile the model
+    model.compile({
+        optimizer: tf.train.rmsprop(0.01),
+        loss: 'categoricalCrossentropy',
+        metrics: ['accuracy']
+    });
+
+    // Train the model
+    await model.fit(inputSeqs, output, {
+        batchSize: 128,
+        epochs: 15,
+        callbacks: {
+            onEpochEnd: async (epoch, logs) => {
+                console.log(`Epoch ${epoch}: loss = ${logs.loss}`);
+                await tf.nextFrame();
+            }
+        }
+    });
+
+    // Generate some text using the trained model, it should just randomly talk about the input text
+    const numChars = 100;
+
+    // Get a random starting text using a random character from the input text
+    const seed = text[Math.floor(Math.random() * (text.length - maxLen))];
+
+    // Generate the text
+    let generated = seed;
+    for (let i = 0; i < numChars; i++) {
+        const input = [...generated.slice(-maxLen)].map(c => charIds.get(c));
+        const output = model.predict(tf.tensor2d([input], [1, input.length]));
+        const winner = tf.argMax(output, 1).dataSync()[0];
+        generated += chars[winner];
+    }
+
+    // Return the generated text
+    return generated;
 }

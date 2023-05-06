@@ -1,25 +1,41 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction, Message } from 'discord.js';
+import { simulateText } from '../ai';
+//import fs from 'fs';
 import Markov from 'js-markov';
-var markov = new Markov();
+const markov = new Markov();
+
+
+
 module.exports = {
     global: true,
     data: new SlashCommandBuilder()
         .setName('simulate')
-        .setDescription('simulates what a user would say')
-        .addUserOption(option =>
-            option.setName('user')
-                .setDescription('The user to simulate')
-                .setRequired(true)),
+        .setDescription('Simulates what a user would say')
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('ai')
+                .setDescription('Simulates what a user would say using AI')
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('The user to simulate')
+                        .setRequired(true)
+                )
+        ).addSubcommand(subcommand =>
+            subcommand
+                .setName('markov')
+                .setDescription('Simulates what a user would say using Markov chains')
+                .addUserOption(option =>
+                    option.setName('user')
+                        .setDescription('The user to simulate')
+                        .setRequired(true)
+                )
+        ),
     async execute(interaction: ChatInputCommandInteraction) {
+        const subcommand = interaction.options.getSubcommand();
         const user = interaction.options.getUser('user');
 
-        interaction.reply('Fetching messages...');
-
-        // use the user to simulate what they would say by looking at their previous messages
-        // it should function the same as UserSim on reddit but for discord
-        // https://github.com/trambelus/UserSim
-        // use markov chains to generate the messages
+        await interaction.reply('Fetching messages...');
 
 
         // get the last 500 messages from the user
@@ -28,7 +44,7 @@ module.exports = {
         let lastMessageId = userMessages.lastKey();
         userMessages = userMessages.filter(message => message.author.id === user.id);
         let i = 0;
-        while (userMessages.size < 200 && i < 10) {
+        while (userMessages.size < 200 && i < 5) {
             let moreMessages = await interaction.channel.messages.fetch({ limit: 100, before: lastMessageId });
             lastMessageId = moreMessages.last().id;
             moreMessages = moreMessages.filter(message => message.author.id === user.id);
@@ -41,7 +57,7 @@ module.exports = {
         console.log(userMessages.size);
         console.log(lastMessageId);
 
-        interaction.editReply('Training Mr Sweet...');
+
 
         // check if there are any messages from the user
         if (userMessages.size === 0) {
@@ -50,30 +66,48 @@ module.exports = {
             return;
         }
 
-        await markov.addStates(userMessages.map(message => message.content));
-
-        await markov.train();
-
-        const message = await markov.generateRandom();
+        if (subcommand === 'ai') {
+            // the plan is to train an RNN on the user's messages
+            // then generate a message from the RNN
 
 
-        // check if its a valid message and not empty
-        if (message && message.length > 0) {
-            // read the length of the content
-            let contentLength = 0;
-            userMessages.forEach(message => {
-                contentLength += message.content.length;
-            });
-            // reply with the message "user said: message"
-            const repMessage = `${user.username} would say: ${message}\n${userMessages.size} messages were used to generate this message with an average message length of ${(contentLength / userMessages.size).toFixed(0)} characters taken from the last ${i * 100} messages.`;
 
+            // warn the user if there are less than 100 messages that it won't be very accurate
+            await interaction.editReply('Training Mr Sweet...' + (userMessages.size < 100 ? '\nWarning: There are less than 100 messages from this user, so the simulation may not be very accurate.' : ''));
 
-            await interaction.editReply({ content: repMessage, allowedMentions: { users: [] } });
-        } else {
-            // reply with an error message ephemerally
-            await interaction.editReply({
-                content: `No Messages were found! ${message.length}`
-            });
+            // get the text from the messages
+            await userMessages.reverse();
+            const text = userMessages.map(message => message.content)
+                // filter out empty messages
+                .filter(message => message !== '')
+
+                // filter out messages that are just links
+                .filter(message => !message.startsWith('http'))
+                .join('\n')
+
+            // console.log(text);
+            // save the text to a file for debugging
+            // fs.writeFileSync('text.txt', text);
+
+            // run the model from 
+            const generatedText = await simulateText(text);
+
+            console.log(generatedText);
+
+            // reply with the generated text
+            await interaction.editReply({ content: generatedText, allowedMentions: { parse: [] } });
+
         }
-    },
-};
+
+        else if (subcommand === 'markov') {
+            markov.addStates(userMessages.map(message => message.content));
+
+            markov.train();
+
+            const generatedText = markov.generateRandom()
+
+
+            await interaction.editReply({ content: generatedText, allowedMentions: { parse: [] } });
+        }
+    }
+}
