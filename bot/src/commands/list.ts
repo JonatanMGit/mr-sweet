@@ -22,6 +22,10 @@ module.exports = {
             subcommand
                 .setName('settings')
                 .setDescription('List all settings in the database')
+        ).addSubcommand(subcommand =>
+            subcommand
+                .setName('costs')
+                .setDescription('List the users which cost the most')
         ),
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
@@ -47,6 +51,19 @@ module.exports = {
                 data += `${setting.Guild} ${setting.enabled_commands}\n`;
             }
         }
+        else if (subcommand === 'costs') {
+            const users = await getUsers();
+            users.sort((a, b) => {
+                return (b.v3tokens_used + b.v4tokens_used) - (a.v3tokens_used + a.v4tokens_used);
+            });
+            // price of token from openai: gpt-3: $0.002 / 1K tokens gp-4: $0.03 / 1K tokens
+            for (const user of users) {
+                data += `User <@${user.id}> has used ${user.v3tokens_used} v3 and ${user.v4tokens_used} v4 tokens
+Total: ${user.v3tokens_used + user.v4tokens_used}
+Cost: ${(user.v3tokens_used / 1000 * 0.002 + user.v4tokens_used / 1000 * 0.03).toFixed(2)} USD\n`;
+            }
+        }
+
 
         if (data.length > 2000) {
             data = data.slice(0, 2000);

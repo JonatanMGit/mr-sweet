@@ -386,3 +386,21 @@ export const count_v4tokens = async (id: string, tokens: number) => {
         create_user(id);
     }
 }
+
+// gets the users v3 and v4tokens_used
+export const get_tokens = async (id: string): Promise<number[]> => {
+    sequelize.sync();
+    const user
+        = await User
+            .findOne({
+                where: {
+                    id: id,
+                }
+            });
+    if (user) {
+        return [user.v3tokens_used, user.v4tokens_used];
+    } else {
+        return [0, 0];
+
+    }
+}
