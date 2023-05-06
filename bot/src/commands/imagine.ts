@@ -40,7 +40,7 @@ const data = new SlashCommandBuilder()
             const cur_choice = {
                 "name": choice.name, "value": choice.value
             }
-            console.log(cur_choice)
+            // console.log(cur_choice)
             option.addChoices(cur_choice)
         }
         return option;
