@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { GuildMember, User } from 'discord.js';
+import { ChatInputCommandInteraction, GuildMember, User, PermissionsBitField } from 'discord.js';
+import client from '..';
+
 
 module.exports = {
     global: true,
@@ -14,26 +16,47 @@ module.exports = {
                 .setDescription('The reason for the ban')
                 .setRequired(false))
         .setDescription('Bans a user'),
-    async execute(interaction) {
-        const user = interaction.options.getUser('user') as GuildMember;
-        const reason = interaction.options.getString('reason');
-        if (user) {
-            // chck permissions and if user is bannable 
-            if (interaction.member.permissions.has('BAN_MEMBERS') && user.bannable) {
-                // send dm to user
-                let message = `You have been banned from ${interaction.guild.name}`;
-                if (reason) {
-                    message += ` for ${reason}`;
+    async execute(interaction: ChatInputCommandInteraction) {
+        const user = interaction.options.getUser('user') as User;
+        const reason = interaction.options.getString('reason') as string;
+
+        await interaction.deferReply({ ephemeral: true });
+
+        // get member from user
+        const member = interaction.guild.members.cache.get(user.id) as GuildMember;
+
+
+        if (member) {
+            // check permissions and if user is bannable 
+            if ((interaction.member.permissions as Readonly<PermissionsBitField>).has(PermissionsBitField.Flags.BanMembers)) {
+                // check if the bots role is higher than the users role
+                if (interaction.guild.members.cache.get(client.user.id).roles.highest.comparePositionTo(member.roles.highest) <= 0) {
+                    await interaction.editReply({ content: 'I do not have permission to ban this user' });
+                    return;
                 }
-                await user.send(message);
+
+                try {
+                    // send dm to user
+                    let message = `You have been banned from ${interaction.guild.name}`;
+                    if (reason) {
+                        message += ` for "${reason}"`;
+                    }
+                    await member.send(message);
+                } catch {
+                    await interaction.editReply({ content: 'Could not send dm to user' });
+                }
                 // ban user
-                await interaction.guild.members.ban(user, { reason: reason });
-                await interaction.reply(`Banned ${user}`);
+                try {
+                    await interaction.guild.members.ban(member, { reason: reason });
+                    await interaction.editReply(`Banned ${member}`);
+                } catch {
+                    await interaction.editReply(`Could not ban ${member}`);
+                }
             } else {
-                await interaction.reply({ content: 'You do not have permission to ban members', ephemeral: true });
+                await interaction.editReply({ content: 'You do not have permission to ban members' });
             }
         } else {
-            await interaction.reply({ content: 'You did not provide a user to ban', ephemeral: true });
+            await interaction.editReply({ content: 'You did not provide a user to ban' });
         }
     },
 };
