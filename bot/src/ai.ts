@@ -196,7 +196,7 @@ export async function simulateText(originalText: string): Promise<string> {
     let generated = seed;
     for (let i = 0; i < numChars; i++) {
         const input = [...generated.slice(-maxLen)].map(c => charIds.get(c));
-        const output = model.predict(tf.tensor2d([input], [1, input.length]));
+        const output = model.predict(tf.tensor2d([input], [1, input.length])) as tf.Tensor;
         const winner = tf.argMax(output, 1).dataSync()[0];
         generated += chars[winner];
     }
