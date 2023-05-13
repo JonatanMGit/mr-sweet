@@ -48,7 +48,6 @@ export const getResponse = (messages: Message[], model: string) => {
     const response = openai.createChatCompletion({
         model: model,
         messages: message,
-        max_tokens: 400,
         n: 1,
         user: hash,
         stream: true,
