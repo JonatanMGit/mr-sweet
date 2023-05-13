@@ -29,10 +29,10 @@ module.exports = {
         const selectedModel = interaction.options.getString('model');
 
         let model = '';
-        if (selectedModel === 'gpt-4') {
-            model = gpt4Model;
-        } else {
+        if (selectedModel === 'gpt-3') {
             model = gpt3Model;
+        } else {
+            model = gpt4Model;
         }
 
         const message = [{ author: interaction.user.id, content: input }] as Message[];
