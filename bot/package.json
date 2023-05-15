@@ -24,7 +24,7 @@
   "homepage": "https://github.com/JonatanMGit/mr-sweet#readme",
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
-    "@dqbd/tiktoken": "^1.0.6",
+    "@dqbd/tiktoken": "^1.0.7",
     "@faker-js/faker": "^7.6.0",
     "@tensorflow/tfjs-node": "^4.4.0",
     "@tensorflow/tfjs-node-gpu": "^4.5.0",
