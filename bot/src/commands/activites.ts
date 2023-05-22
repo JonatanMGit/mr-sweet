@@ -14,7 +14,7 @@ const DISCORD_APPLICATIONS = [
 	{ id: '903769130790969345', name: 'Land-io', nitro_requirement: false, premium_tier_level: 1, max_participants: 16, use: true },
 	{ id: '947957217959759964', name: 'Bobble League', nitro_requirement: false, premium_tier_level: 1, max_participants: 8, use: true },
 	{ id: '976052223358406656', name: 'Ask Away', nitro_requirement: false, premium_tier_level: 1, max_participants: 10, use: true },
-	{ id: '950505761862189096', name: 'Know What I Meme', nitro_requirement: false, premium_tier_level: 1, max_participants: 8, use: true },
+	{ id: '1078728822972764312', name: 'Know What I Meme', nitro_requirement: false, premium_tier_level: 1, max_participants: 8, use: true },
 
 	// not public
 	{ id: '773336526917861400', name: 'Betrayal.io', nitro_requirement: false, premium_tier_level: 0, max_participants: null, use: false },
@@ -24,7 +24,7 @@ const DISCORD_APPLICATIONS = [
 ];
 
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { APIApplicationCommandOptionChoice, CommandInteraction } from 'discord.js';
+import { APIApplicationCommandOptionChoice, ChannelType, ChatInputCommandInteraction, CommandInteraction } from 'discord.js';
 // const fetch = require("node-fetch");
 let choises = [];
 
@@ -54,17 +54,26 @@ let command = new SlashCommandBuilder()
 			option.addChoices(cur_choice)
 		}
 		return option;
+	})
+	.addChannelOption(option => {
+		option.setName('channel')
+			.setDescription('The channel to start the activity in')
+			.addChannelTypes(ChannelType.GuildVoice)
+			.setRequired(true);
+		return option;
 	});
+
 
 
 // add every choice as an array of [name, name]
 module.exports = {
 	global: true,
 	data: command,
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 		// generate a new invite for the activity using the activity id from the option
-		// @ts-ignore
-		const invite = await activityInvite(interaction.options.getString('activity', true), interaction.channelId);
+		const activity = interaction.options.getString('activity', true);
+		const channel = interaction.options.getChannel('channel', true);
+		const invite = await activityInvite(activity, channel.id);
 
 
 		// send the invite to the channel
@@ -74,10 +83,10 @@ module.exports = {
 
 
 async function activityInvite(applicationId: string, channelId: string) {
-	const invite = await fetch(`https://discord.com/api/v8/channels/1055955436643287071/invites`, {
+	const invite = await fetch(`https://discord.com/api/v9/channels/${channelId}/invites`, {
 		method: 'POST',
 		body: JSON.stringify({
-			max_age: 86400,
+			max_age: 600,
 			max_uses: 0,
 			target_application_id: applicationId,
 			target_type: 2,

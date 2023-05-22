@@ -25,6 +25,11 @@ export async function loadCommands(client: CustomClient) {
 export async function registerCommands(client: CustomClient) {
     //register every slash command in the commands folder if command.global is false
     const commands = [];
+    // check if the bots id is 813852446069751838 in order to prevent registering commands in the wrong bot
+    if (client.user.id !== "813852446069751838") {
+        console.error("Wrong bot id");
+        return;
+    }
     console.log("Starting to register commands");
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);
@@ -74,7 +79,7 @@ export async function prepareGlobalCommands(client: CustomClient) {
             console.log(`Started refreshing ${commands.length} global application (/) commands.`);
 
             const data = await rest.put(
-                Routes.applicationCommands("1043905318867980530"),
+                Routes.applicationCommands(process.env.clientId),
                 { body: commands },
             );
             // @ts-ignore

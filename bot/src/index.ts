@@ -10,9 +10,10 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 export default client;
 client.commands = new Collection();
 
+
 // reload commands
 handleEvents(client);
-registerCommands(client);
+
 loadCommands(client);
 prepareGlobalCommands(client);
 
@@ -23,7 +24,10 @@ client.once(Events.ClientReady, () => {
     console.log('Ready!');
 });
 
-client.login(process.env.TOKEN);
+(async () => {
+    await client.login(process.env.TOKEN);
+    registerCommands(client);
+})();
 
 process.on('uncaughtException', (err) => {
     if (err instanceof DiscordAPIError) {
