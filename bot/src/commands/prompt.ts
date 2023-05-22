@@ -11,7 +11,7 @@ module.exports = {
         .setName('prompt')
         .setDescription('Ask Mr Sweet anything')
         .addStringOption(option => option.setName('input').setDescription('Your Message').setRequired(true))
-        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false).addChoices({ name: 'Mr Sweet v3', value: 'gpt-3' }, { name: 'Mr Sweet v4', value: 'gpt-4' })
+        .addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false).addChoices({ name: 'Mr Sweet v3', value: 'gpt-3' }, { name: 'Mr Sweet v4 (Default)', value: 'gpt-4' })
         ).addBooleanOption(option => option.setName('hidden').setDescription("Don't show the author of the message").setRequired(false)),
     async execute(interaction: ChatInputCommandInteraction) {
         let limited = rateLimiter.take(interaction.user.id);
