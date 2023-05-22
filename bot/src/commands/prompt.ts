@@ -55,11 +55,11 @@ module.exports = {
 
 
         // update the message with the new data every 1 seconds until the stream is finished
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             if (hidden) {
-                interaction.editReply(data);
+                await interaction.editReply(data);
             } else {
-                sweetMessage.edit(data);
+                await sweetMessage.edit(data);
             }
         }, 1000);
 
@@ -81,12 +81,12 @@ module.exports = {
             }
         });
         // stop the interval when the stream is finished, but mak
-        response.data.on('end', () => {
+        response.data.on('end', async () => {
             clearInterval(interval);
             if (hidden) {
-                interaction.editReply(data);
+                await interaction.editReply(data);
             } else {
-                sweetMessage.edit(data);
+                await sweetMessage.edit(data);
             }
             // push the response to the message array to also count the tokens for the response
             message.push({ author: '1043905318867980530', content: data });
