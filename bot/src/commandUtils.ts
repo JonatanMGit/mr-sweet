@@ -25,8 +25,8 @@ export async function loadCommands(client: CustomClient) {
 export async function registerCommands(client: CustomClient) {
     //register every slash command in the commands folder if command.global is false
     const commands = [];
-    // check if the bots id is 813852446069751838 in order to prevent registering commands in the wrong bot
-    if (client.user.id !== "813852446069751838") {
+    // check if the bots id is 1043905318867980530 in order to prevent registering commands in the wrong bot
+    if (client.user.id !== "1043905318867980530") {
         console.error("Wrong bot id");
         return;
     }
