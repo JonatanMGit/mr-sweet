@@ -1,4 +1,4 @@
-import { getAllSettings, getGuilds, getSettings, getUsers, User } from "../db";
+import { getAllSettings, getGuilds, getSettings, getUsers, Settings, User } from "../db";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 let data = '';
@@ -33,7 +33,7 @@ module.exports = {
             const users = await getUsers();
             for (const user of users) {
                 //data += `${user.id} ${user.openai_request_count} ${user.commands_used} ${user.v3tokens_used} ${user.v4tokens_used} hi\n`;
-                data += `User <@${user.id}> has made ${user.openai_request_count} requests using ${user.v3tokens_used} v3 and ${user.v4tokens_used} v4 tokens\n`;
+                data += `User <@${user.id}> has made ${user.openai_request_count} requests using ${user.v3tokens_used} v3 and ${user.v4tokens_prompt_used + user.v4tokens_completion_used} v4 tokens\n`;
 
             }
 
@@ -48,19 +48,19 @@ module.exports = {
             const settings = await getAllSettings();
 
             for (const setting of settings) {
-                data += `${setting.Guild} ${setting.enabled_commands}\n`;
+                data += `${setting.id} ${setting.enabledCommands}\n`;
             }
         }
         else if (subcommand === 'costs') {
             const users = await getUsers();
             users.sort((a, b) => {
-                return (b.v3tokens_used + b.v4tokens_used) - (a.v3tokens_used + a.v4tokens_used);
+                return (b.v3tokens_used + b.v4tokens_prompt_used + b.v4tokens_completion_used) - (a.v3tokens_used + a.v4tokens_prompt_used + b.v4tokens_completion_used);
             });
             // price of token from openai: gpt-3: $0.002 / 1K tokens gp-4: $0.03 / 1K tokens
             for (const user of users) {
-                data += `User <@${user.id}> has used ${user.v3tokens_used} v3 and ${user.v4tokens_used} v4 tokens
-Total: ${user.v3tokens_used + user.v4tokens_used}
-Cost: ${(user.v3tokens_used / 1000 * 0.002 + user.v4tokens_used / 1000 * 0.03).toFixed(2)} USD\n`;
+                data += `User <@${user.id}> has used ${user.v3tokens_used} v3 and ${user.v4tokens_prompt_used + user.v4tokens_completion_used} v4 tokens
+Total: ${user.v3tokens_used + user.v4tokens_prompt_used + user.v4tokens_completion_used}
+Cost: ${(user.v3tokens_used / 1000 * 0.002 + (user.v4tokens_prompt_used / 1000 * 0.03) + (user.v4tokens_completion_used / 1000 * 0.06)).toFixed(2)} USD\n`;
             }
         }
 
@@ -78,6 +78,6 @@ Cost: ${(user.v3tokens_used / 1000 * 0.002 + user.v4tokens_used / 1000 * 0.03).t
             await interaction.reply({ content: data, allowedMentions: { parse: [] } });
             return;
         }
-        await interaction.reply('I don\'t I can allow you to do that');
+        await interaction.reply('I can\'t allow you to do that');
     },
 };

@@ -1,9 +1,10 @@
-import { ForeignKeyConstraintError } from "sequelize";
 
 // set up database sequelize
-const { Sequelize } = require('sequelize');
-const rootDir = require('path').resolve('../database.sqlite');
+import { Sequelize, DataType, Table, Column, Model } from 'sequelize-typescript';
+import * as path from 'path';
 // set up sqlite database ./database.sqlite
+
+const rootDir = path.resolve(__dirname, '../database.sqlite');
 export const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: rootDir,
@@ -11,95 +12,55 @@ export const sequelize = new Sequelize({
 });
 console.log("Database path: " + rootDir);
 
-export type User = {
-    id: string,
-    refresh_token?: string
-    openai_request_count: number
-    commands_used: number
-    v3tokens_used: number
-    v4tokens_used: number
-    costs: number
-}
-export type Settings = {
-    Guild: string,
-    enabled_commands: string,
-}
-
-export type Guild = {
-    id: number,
-    name: string
-}
-
-// create the guild table
-export const Guild = sequelize.define('Guild', {
-    // Model attributes are defined here
-    id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        primaryKey: true
-    }, name: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-
-});
-
-// make an table for settings for each guild with the guild id as a foreign key
-export const Settings = sequelize.define('Settings', {
-    // Model attributes are defined here
-    id: {
-        // id of guild is the primary key
-        type: Sequelize.INTEGER,
-        allowNull: false,
+// set up database models
+@Table
+export class User extends Model {
+    @Column({
         primaryKey: true,
-        references: {
-            // This is a reference to another model
-            model: Guild,
-            key: 'id'
-        }
-    },
-    enabled_commands: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
-});
+    })
+    declare id: string;
+
+    @Column
+    refresh_token: string;
+
+    @Column
+    openai_request_count: number;
+
+    @Column
+    commands_used: number;
+
+    @Column
+    v3tokens_used: number;
+
+    @Column
+    v4tokens_prompt_used: number;
+
+    @Column
+    v4tokens_completion_used: number;
+}
+
+@Table
+export class Guild extends Model {
+    @Column({
+        primaryKey: true,
+    })
+    declare id: string;
+
+    @Column
+    name: string;
+}
 
 
-// create the user table
-export const User = sequelize.define('User', {
-    // Model attributes are defined here
-    id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        primaryKey: true
-    },
-    refresh_token: {
-        type: Sequelize.STRING,
-        allowNull: true
-    },
-    openai_request_count: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    },
-    commands_used: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    }
-    ,
-    v3tokens_used: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    }
-    ,
-    v4tokens_used: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
-    }
-});
+@Table
+export class Settings extends Model {
+    @Column({
+        primaryKey: true,
+    })
+    declare id: string;
+
+    @Column
+    enabledCommands: string;
+}
 
 export const saveUser = async (options: User) => {
     sequelize.sync();
@@ -335,7 +296,8 @@ export const create_user = async (id) => {
         id: id,
         refresh_token: null,
         v3tokens_used: 0,
-        v4tokens_used: 0,
+        v4tokens_prompt_used: 0,
+        v4tokens_completion_used: 0,
         openai_request_count: 0,
     });
     user.save()
@@ -379,28 +341,10 @@ export const count_v4tokens = async (id: string, tokens: number) => {
                 }
             });
     if (user) {
-        user.v4tokens_used += tokens;
+        user.v4tokens_completion_used += tokens;
         user.save();
     } else {
         console.log("User not found");
         create_user(id);
-    }
-}
-
-// gets the users v3 and v4tokens_used
-export const get_tokens = async (id: string): Promise<number[]> => {
-    sequelize.sync();
-    const user
-        = await User
-            .findOne({
-                where: {
-                    id: id,
-                }
-            });
-    if (user) {
-        return [user.v3tokens_used, user.v4tokens_used];
-    } else {
-        return [0, 0];
-
     }
 }
