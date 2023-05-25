@@ -62,6 +62,10 @@ export class Settings extends Model {
     enabledCommands: string;
 }
 
+// register models
+sequelize.addModels([User, Guild, Settings]);
+
+
 export const saveUser = async (options: User) => {
     sequelize.sync();
     // check if user already exists in the database with the same id and update refresh token if yes
