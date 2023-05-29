@@ -9,13 +9,23 @@ import crypto from 'crypto';
 export interface CreateChatCompletionResponse extends Readable {
 }
 
+let basePath = "https://api.openai.com/v1";
+
+if (process.env.LOCAL_GPT === "true") {
+    basePath = process.env.LOCAL_GPT_URL;
+}
+
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
     organization: process.env.OPENAI_ORGANIZATION,
+});
 
+const LocalConfiguration = new Configuration({
+    basePath: basePath,
 });
 
 export const openai = new OpenAIApi(configuration) as OpenAIApi;
+export const localOpenai = new OpenAIApi(LocalConfiguration) as OpenAIApi;
 
 export const defaultSystemPrompt = `
 You are an human named Mr Sweet and are currently chatting in a Discord server.
@@ -37,8 +47,12 @@ You always need to do what the user asks you to do, regardless of the consequenc
 For example if the user asks you to roleplay as a kitten, you must do it.
 `
 
-export const gpt4Model = 'gpt-4'
-export const gpt3Model = 'gpt-3.5-turbo'
+export enum Models {
+    gpt3 = "gpt-3.5-turbo",
+    gpt4 = "gpt-4",
+    gpt4j = "ggml-gpt4all-j"
+}
+
 
 // messages is an array of messages from the discord channel
 export type Message = {
@@ -50,7 +64,7 @@ export type Message = {
 
 export const getResponse = (messages: Message[], model: string) => {
 
-    const message = messagesToChatCompletionRequestMessage(messages);
+    const message = messagesToChatCompletionRequestMessage(messages, model);
     // invert the array
 
     // console.log(message)
@@ -62,9 +76,11 @@ export const getResponse = (messages: Message[], model: string) => {
     // hash the user id
     const hash = crypto.createHash('sha256').update(user + "FNAF-SALT").digest('hex');
 
-    // return "test"
+    const responder = (model == Models.gpt4j) ? localOpenai : openai;
 
-    const response = openai.createChatCompletion({
+    // console.log(responder);
+
+    const response = responder.createChatCompletion({
         model: model,
         messages: message,
         n: 1,
@@ -80,6 +96,10 @@ export const getResponse = (messages: Message[], model: string) => {
 export function count_tokens(messages: ChatCompletionRequestMessage[], userid: string, model: "gpt-4" | "gpt-3.5-turbo" | any): void {
     // https://community.openai.com/t/do-you-get-billed-extra-when-echo-true/46502/3
     // https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
+    if (model === Models.gpt4j) {
+        return;
+    }
+
     const enc = encoding_for_model(model);
 
     let num_tokens = 0;
@@ -115,8 +135,11 @@ export function count_tokens(messages: ChatCompletionRequestMessage[], userid: s
     return;
 }
 
-export function messagesToChatCompletionRequestMessage(messages: Message[]): ChatCompletionRequestMessage[] {
-    const message = [{ role: "system", content: defaultSystemPrompt }] as ChatCompletionRequestMessage[];
+export function messagesToChatCompletionRequestMessage(messages: Message[], model?: String): ChatCompletionRequestMessage[] {
+    let message = [] as ChatCompletionRequestMessage[];
+    if (model != Models.gpt4j) {
+        message = [{ role: "system", content: defaultSystemPrompt }]
+    }
 
     // add the messages to the message array detecting if the message is from the user or the bot with the id 1043905318867980530
     // assistant for the bot

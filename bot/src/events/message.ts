@@ -1,5 +1,5 @@
 import { ChannelType, Events, Message } from 'discord.js';
-import { count_tokens, getResponse, getUser, gpt3Model, gpt4Model, messagesToChatCompletionRequestMessage } from '../ai';
+import { count_tokens, getResponse, getUser, Models, messagesToChatCompletionRequestMessage } from '../ai';
 import { RateLimiter } from 'discord.js-rate-limiter';
 let rateLimiter = new RateLimiter(1, 5000);
 
@@ -11,10 +11,10 @@ module.exports = {
         if (message.channel.type === ChannelType.DM) return;
 
         // if the message is in the channel with the id 1096122391513542697
-        if (message.channel.id === "1096122391513542697" || message.channel.id == "1096189924748832788") {
+        if (message.channel.id === "1096122391513542697" || message.channel.id == "1096189924748832788" || message.channel.id == "1112868129882771516") {
             // check if the message isnt too long
             if (message.content.length > 1000) {
-                message.reply("Your message is too long!");
+                message.delete();
                 return;
             }
             let limited = rateLimiter.take(message.author.id);
@@ -46,7 +46,12 @@ module.exports = {
             // get the response from the ai
 
             // make the model depend on the channel id the first one is gpt4 the second one is gpt3
-            const Model = message.channel.id === "1096122391513542697" ? gpt4Model : gpt3Model;
+            let Model = "";
+            if (message.channel.id === "1112868129882771516") {
+                Model = Models.gpt4j;
+            } else {
+                Model = message.channel.id === "1096122391513542697" ? Models.gpt4 : Models.gpt3;
+            }
             try {
                 const response = await getResponse(messagesData, Model);
 
@@ -54,7 +59,7 @@ module.exports = {
                 // so send the initial data and then update the message with the new data
                 // the data event is called multiple times so we need to store the data in a variable and then update the message
 
-                let data = '';
+                let data = 'Thinking wda...';
 
                 const msg = await message.channel.send("Thinking...");
 
