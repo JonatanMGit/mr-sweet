@@ -34,11 +34,19 @@ module.exports = {
         */
         // add each option to the message inidividually and allow one to be missing
         if (input) {
+            // check if the message is more than 2000 characters
+            if (input.length > 2000) {
+                await interaction.reply({ content: 'Your message is too long!', ephemeral: true });
+                return;
+            }
+
             message.content = input;
+
         }
         if (attachment) {
             message.files = [attachment];
         }
+
         if (reply) {
             message.reply = {
                 messageReference: reply
