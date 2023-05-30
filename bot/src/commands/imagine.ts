@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { openai } from '../ai'
+import { openai, localOpenai } from '../ai'
 import { CreateImageRequest, CreateImageRequestSizeEnum } from 'openai';
 import { APIApplicationCommandOptionChoice, ChatInputCommandInteraction } from 'discord.js';
 import { RateLimiter } from 'discord.js-rate-limiter';
@@ -46,7 +46,9 @@ const data = new SlashCommandBuilder()
         return option;
     });
 
-
+if (process.env.LOCAL_GPT === 'true') {
+    data.addStringOption(option => option.setName('model').setDescription('The model to use').setRequired(false).addChoices({ name: 'Mr Sweet Local', value: 'local' }, { name: 'OpenAI', value: 'openai' }));
+}
 
 module.exports = {
     global: true,
@@ -74,9 +76,15 @@ module.exports = {
             size: size
 
         } as CreateImageRequest
+
+        let responder = openai;
+        if (process.env.LOCAL_GPT === 'true' && interaction.options.getString('model') !== 'openai') {
+            responder = localOpenai;
+        }
+
         let message = '';
         try {
-            const response = await openai.createImage(
+            const response = await responder.createImage(
                 request
             );
 
