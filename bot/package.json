@@ -25,7 +25,7 @@
   "dependencies": {
     "@discordjs/voice": "^0.16.0",
     "@dqbd/tiktoken": "^1.0.6",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.2",
     "@tensorflow/tfjs-node": "^4.4.0",
     "@tensorflow/tfjs-node-gpu": "^4.5.0",
     "axios": "^1.4.0",
