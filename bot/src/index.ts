@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits, Events, Collection, DiscordAPIError } from '
 require('dotenv').config();
 import { prepareGlobalCommands, loadCommands, registerCommands } from './commandUtils';
 import handleEvents from './eventHandler';
+import { printInvites, updateInvite } from './invites';
 
 export interface CustomClient extends Client {
     commands: Collection<string, any>
@@ -22,6 +23,8 @@ prepareGlobalCommands(client);
 // Notify when the bot is ready
 client.once(Events.ClientReady, () => {
     console.log('Ready!');
+
+    updateInvite(client);
 });
 
 (async () => {

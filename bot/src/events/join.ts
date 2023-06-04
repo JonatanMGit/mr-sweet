@@ -1,5 +1,6 @@
 import { Events, GuildMember, TextChannel } from "discord.js";
 import createWelcomeGif from '../image';
+import { newMember } from "../invites";
 
 module.exports = {
     // send a message to the channel 1051064356026187846 when a user leaves
@@ -19,13 +20,19 @@ module.exports = {
 
             const buffer = await createWelcomeGif(member.user);
 
-            // console.log("Senwdwdawdwawa");
+            console.log("Senwdwdawdwawa");
 
             // console.log(buffer);
 
+            // get the meber who invited the user
+            const inviter = await newMember(member);
+
+            const inviteText = inviter ? `You were invited by <@${inviter.id}>` : "";
+
+            console.log("fnaf");
 
             channel.send({
-                content: `Welcome to the server <@${member.user.id}>!`,
+                content: `Welcome to the server <@${member.user.id}>! ${inviteText}`,
                 allowedMentions: { parse: [] },
                 files: [{
                     attachment: buffer,
