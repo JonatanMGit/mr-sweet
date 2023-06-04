@@ -28,6 +28,7 @@ export async function getUserID(identifier: string | number): Promise<number> {
 
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from 'discord.js';
+import { NonMaxSuppressionV3 } from '@tensorflow/tfjs-node-gpu';
 
 module.exports = {
     global: false,
@@ -312,7 +313,43 @@ module.exports = {
             await interaction.editReply({ embeds: [embed], components: rows });
 
 
-        } else {
+        } else if (interaction.options.getSubcommand() === 'asset') {
+            await interaction.deferReply();
+            const id = interaction.options.getInteger('target');
+
+            const asset = await noblox.getProductInfo(id);
+
+            const created = new Date(asset.Created);
+            const updated = new Date(asset.Updated);
+
+            const thumbnail = {
+                targetId: id,
+                size: "420x420",
+                type: "Asset"
+            } as ThumbnailRequest;
+
+            const thumbnailData = await noblox.getThumbnails([thumbnail])
+            //console.log(thumbnailData)
+            const thumbnailURL = thumbnailData[0].imageUrl
+            const embed = (new EmbedBuilder() as EmbedBuilder)
+                .setTitle(`${asset.Name}`)
+                .setColor(0x00ff00)
+                .addFields(
+                    { name: 'Description', value: asset.Description, inline: false },
+                    { name: 'Creator', value: asset.Creator.Name, inline: false },
+                    { name: 'Created', value: "<t:" + Math.floor(created.getTime() / 1000) + ":F>", inline: true },
+                    { name: 'Updated', value: "<t:" + Math.floor(updated.getTime() / 1000) + ":F>", inline: true },
+                    { name: 'Is For Sale', value: asset.IsForSale ? 'Yes' : 'No', inline: true },
+                    { name: 'Is Limited', value: asset.IsLimited ? 'Yes' : 'No', inline: true },
+                    { name: 'Is Limited Unique', value: asset.IsLimitedUnique ? 'Yes' : 'No', inline: true },
+                    { name: 'Remaining', value: asset.Remaining ? asset.Remaining.toString() : 'N/A', inline: true },
+                    { name: 'Sales', value: asset.Sales ? asset.Sales.toString() : 'N/A', inline: true },
+                ).setImage(thumbnailURL);
+
+            await interaction.editReply({ embeds: [embed] });
+
+        }
+        else {
             interaction.reply({ content: 'Not yet implemented :troll:', ephemeral: true });
         }
     },
