@@ -17,7 +17,12 @@ module.exports = {
                 await command.execute(interaction);
             } catch (error) {
                 console.error(error);
-                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+                const content = "'There was an error while executing this command!'"
+                if (interaction.replied) {
+                    await interaction.editReply({ content: content });
+                } else {
+                    await interaction.reply({ content: content, ephemeral: true });
+                }
             }
         } else if (interaction.isMessageContextMenuCommand()) {
             (interaction as MessageContextMenuCommandInteraction);
