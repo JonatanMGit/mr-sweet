@@ -12,6 +12,9 @@ module.exports = {
 
         // currently just send a message to the channel if its the guild 813852446069751838
         if (member.guild.id === "813852446069751838") {
+            //give the user the role 1088498513232547952
+            member.roles.add("1088498513232547952");
+
             //console.log("Sending welcome message");
 
             const channel = member.guild.channels.cache.get("813852446069751842") as TextChannel;
