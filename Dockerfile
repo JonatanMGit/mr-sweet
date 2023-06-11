@@ -11,6 +11,7 @@ RUN apk add --update --no-cache \
     cairo-dev \
     giflib-dev \
     pango-dev \
+
     libtool \
     autoconf \
     automake \
@@ -27,5 +28,10 @@ RUN npm prune --production
 # Production stage
 FROM node:19.5.0-alpine
 WORKDIR /app
+RUN apk add --update --no-cache \
+    cairo \
+    pango \
+    jpeg \
+    giflib
 COPY --from=build /app/ .
 CMD [ "npm", "run", "start:bot" ]
