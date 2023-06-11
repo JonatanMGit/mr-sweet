@@ -4,7 +4,7 @@ import { ChatCompletionRequestMessage } from 'openai';
 import { Readable } from 'stream'
 import { count_openai_request, count_v3tokens, count_v4tokens } from './db';
 import { encoding_for_model } from "@dqbd/tiktoken";
-import * as tf from '@tensorflow/tfjs-node-gpu';
+// import * as tf from '@tensorflow/tfjs-node-gpu';
 import crypto from 'crypto';
 export interface CreateChatCompletionResponse extends Readable {
 }
@@ -166,6 +166,7 @@ export function getUser(messages: Message[]): string {
     return user;
 }
 
+/*
 export async function simulateText(originalText: string): Promise<string> {
     // Define some hyperparameters for the model
     const maxLen = 40; // Maximum length of a sequence
@@ -245,3 +246,4 @@ export async function simulateText(originalText: string): Promise<string> {
     // Return the generated text
     return generated;
 }
+*/
