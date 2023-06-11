@@ -69,6 +69,12 @@ module.exports = {
         const amount = interaction.options.getInteger('amount') || 1;
         const size = interaction.options.getString('size') || '256x256';
 
+        // limit the amount of images to 5
+        if (amount > 10) {
+            await interaction.editReply('You can only generate 10 images at a time');
+            return;
+        }
+
         const request = {
             prompt: prompt,
             n: amount,
@@ -82,7 +88,8 @@ module.exports = {
             responder = localOpenai;
         }
 
-        let message = '';
+        let files = [];
+
         try {
             const response = await responder.createImage(
                 request
@@ -90,17 +97,18 @@ module.exports = {
 
 
             for (const image of response.data.data) {
-                message += image.url + '\n';
+                files.push({
+                    attachment: image.url,
+                    name: "image.png"
+                });
             }
         }
         catch (e) {
-            message = e.response.data.error.message;
+            console.log(e);
+            await interaction.editReply('Something went wrong');
+            return;
 
         }
-
-
-        await interaction.editReply(message);
-
-
+        await interaction.editReply({ files: files });
     },
 };
