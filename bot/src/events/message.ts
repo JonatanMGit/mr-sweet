@@ -1,11 +1,13 @@
 import { ChannelType, Events, Message } from 'discord.js';
 import { count_tokens, getResponse, getUser, Models, messagesToChatCompletionRequestMessage } from '../ai';
 import { RateLimiter } from 'discord.js-rate-limiter';
+import { new_Messages } from '../db';
 let rateLimiter = new RateLimiter(1, 5000);
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message: Message) {
+        new_Messages(message);
 
         if (message.author.bot) return;
         if (message.channel.type === ChannelType.DM) return;

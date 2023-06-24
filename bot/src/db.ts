@@ -2,6 +2,9 @@
 // set up database sequelize
 import { Sequelize, DataType, Table, Column, Model } from 'sequelize-typescript';
 import * as path from 'path';
+import { table } from 'console';
+import { message } from 'noblox.js';
+import { Message } from 'discord.js';
 // set up sqlite database ./database.sqlite
 
 const rootDir = path.resolve(__dirname, '../database.sqlite');
@@ -62,8 +65,29 @@ export class Settings extends Model {
     enabledCommands: string;
 }
 
+@Table
+export class Messages extends Model {
+    @Column({
+        primaryKey: true,
+    })
+    declare message_id: string;
+
+    @Column
+    user_id: string;
+
+    @Column
+    guild_id: string;
+
+    @Column
+    channel_id: string;
+
+    @Column
+    content: string;
+
+}
+
 // register models
-sequelize.addModels([User, Guild, Settings]);
+sequelize.addModels([User, Guild, Settings, Messages]);
 
 
 export const saveUser = async (options: User) => {
@@ -351,4 +375,49 @@ export const count_v4tokens = async (id: string, tokens: number) => {
         console.log("User not found");
         create_user(id);
     }
+}
+
+export const new_Messages = async (message: Message) => {
+    sequelize.sync();
+    // check if unique message id
+    const prevMessage
+        = await Messages
+            .findOne({
+                where: {
+                    message_id: message.id,
+                }
+            });
+    if (prevMessage) {
+        console.log("Message already exists in database");
+        return;
+    }
+
+    const dbmessage = new Messages({
+        message_id: message.id,
+        user_id: message.author.id,
+        guild_id: message.guild.id,
+        channel_id: message.channel.id,
+        content: message.content
+    });
+    dbmessage.save()
+}
+
+export const getMessages = async (guildId: string): Promise<Messages[]> => {
+    sequelize.sync();
+    const messages = await Messages.findAll({
+        where: {
+            guild_id: guildId,
+        }
+    });
+    return messages;
+}
+
+export const getMessagesByChannel = async (channelId: string): Promise<Messages[]> => {
+    sequelize.sync();
+    const messages = await Messages.findAll({
+        where: {
+            channel_id: channelId,
+        }
+    });
+    return messages;
 }
