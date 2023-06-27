@@ -38,6 +38,15 @@ export async function getImagesFromPost(postURL: String): Promise<String[] | und
 
         console.log("not a gallery");
 
+        if (json.post_hint == "image") {
+            images.push(json.url);
+            return images;
+        }
+
+        if (json.is_video) {
+            console.log("not yet implemented (audio is split from video)");
+        }
+
 
         return undefined;
     }
