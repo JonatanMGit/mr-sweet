@@ -1,5 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction, MessageCreateOptions } from 'discord.js';
+import { saveSaid } from '../db';
+
+
+const IGNORED_IDs = process.env.IGNORED_IDs?.split(',') || [];
 
 module.exports = {
     global: true,
@@ -59,7 +63,11 @@ module.exports = {
             return;
         }
 
-        await interaction.channel.send(message)
+        const sentMessage = await interaction.channel.send(message)
+
+        // save the message to the database
+        if (!IGNORED_IDs.includes(interaction.user.id))
+            await saveSaid(sentMessage, interaction.user);
 
         // finish the interaction
         await interaction.deleteReply();

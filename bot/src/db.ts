@@ -3,8 +3,10 @@
 import { Sequelize, DataType, Table, Column, Model } from 'sequelize-typescript';
 import * as path from 'path';
 import { table } from 'console';
-import { message } from 'noblox.js';
 import { Message } from 'discord.js';
+// import user as Discorduser from discord.js
+import { User as DiscordUser } from 'discord.js';
+
 // set up sqlite database ./database.sqlite
 
 const rootDir = path.resolve(__dirname, '../database.sqlite');
@@ -86,9 +88,45 @@ export class Messages extends Model {
 
 }
 
-// register models
-sequelize.addModels([User, Guild, Settings, Messages]);
+@Table
+export class said extends Model {
+    @Column({
+        primaryKey: true,
+    })
+    declare message_id: string;
 
+    @Column
+    user_id: string;
+}
+
+// register models
+sequelize.addModels([User, Guild, Settings, Messages, said]);
+
+// said functions
+export const saveSaid = async (message: Message, user: DiscordUser) => {
+    sequelize.sync();
+    const saidMessage = new said({
+        message_id: message.id,
+        user_id: user.id
+    });
+    saidMessage.save()
+        .catch(err => {
+            console.log(err);
+        }
+        );
+}
+
+export const getSaid = async (message: Message): Promise<said> => {
+    sequelize.sync();
+    const saidMessage
+        = await said
+            .findOne({
+                where: {
+                    message_id: message.id,
+                }
+            });
+    return saidMessage;
+}
 
 export const saveUser = async (options: User) => {
     sequelize.sync();

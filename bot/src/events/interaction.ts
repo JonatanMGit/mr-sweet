@@ -26,10 +26,12 @@ module.exports = {
             }
         } else if (interaction.isMessageContextMenuCommand()) {
             (interaction as MessageContextMenuCommandInteraction);
-            const message = interaction.targetMessage.content;
-            await interaction.reply({ content: message, ephemeral: true });
-            // TODO: load commands from seperate files
-
+            const command = client.commands.get(interaction.commandName)
+            if (!command) {
+                console.error(`No command matching ${interaction.commandName} was found.`);
+                return;
+            }
+            command.execute(interaction);
         }
         else if (interaction.isStringSelectMenu()) {
             (interaction as StringSelectMenuInteraction);
