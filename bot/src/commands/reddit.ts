@@ -1,11 +1,10 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { getImagesFromPost } from '../redditHandler';
-import { tr } from '@faker-js/faker';
 
 
 module.exports = {
-    global: false,
+    global: true,
     data: new SlashCommandBuilder()
         .setName('reddit')
         .setDescription('Send a galery of images from a reddit post')
