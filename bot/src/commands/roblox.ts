@@ -28,10 +28,9 @@ export async function getUserID(identifier: string | number): Promise<number> {
 
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction } from 'discord.js';
-import { NonMaxSuppressionV3 } from '@tensorflow/tfjs-node-gpu';
 
 module.exports = {
-    global: false,
+    global: true,
     data: new SlashCommandBuilder()
         .setName('roblox')
         .setDescription('Gets information from Roblox')
