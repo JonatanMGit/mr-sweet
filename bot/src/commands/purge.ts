@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { ChatInputCommandInteraction, PermissionsBitField } from 'discord.js';
 
 module.exports = {
     global: true,
@@ -8,20 +9,23 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('amount')
                 .setDescription('The amount of messages to delete')
-                .setRequired(true)),
-    async execute(interaction) {
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(100)),
+
+    async execute(interaction: ChatInputCommandInteraction) {
         // check perms
-        if (!interaction.member.permissions.has('MANAGE_MESSAGES')) {
+        if (!(interaction.member.permissions as PermissionsBitField).has(PermissionsBitField.Flags.ManageMessages)) {
             await interaction.reply({ content: 'You do not have permission to use this command!', ephemeral: true });
             return;
         }
         try {
             interaction.deferReply({ ephemeral: true });
             const amount = interaction.options.getInteger('amount');
-            await interaction.channel.bulkDelete(amount + 1, true);
-            await interaction.reply(`Deleted ${amount} messages!`);
+            await interaction.channel.bulkDelete(amount, true);
+            await interaction.editReply(`Deleted ${amount} messages!`);
         } catch (error) {
-            await interaction.reply({ content: 'There was an error while deleting the messages!', ephemeral: true });
+            await interaction.editReply('There was an error while deleting the messages!');
         }
     },
 };
