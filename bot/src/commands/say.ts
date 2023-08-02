@@ -30,6 +30,12 @@ module.exports = {
         let message = { allowedMentions: {} } as MessageCreateOptions;
         // defer reply to allow for file upload if it takes longer than 3 seconds
         await interaction.deferReply({ ephemeral: true });
+
+        // check if message begins with Author: abd then deny it
+        if (input && input.includes('Author:')) {
+            interaction.editReply("Acces denied as you are trying to impersonate someone!");
+            return;
+        }
         /*
         if (attachment && interaction.author.id !== '1') {
             await interaction.reply({ content: 'This feature is reserved for Mr Sweet pro users only!', ephemeral: true });
@@ -40,7 +46,7 @@ module.exports = {
         if (input) {
             // check if the message is more than 2000 characters
             if (input.length > 2000) {
-                await interaction.reply({ content: 'Your message is too long!', ephemeral: true });
+                await interaction.editReply({ content: 'Your message is too long!' });
                 return;
             }
 
@@ -59,7 +65,7 @@ module.exports = {
 
         // detect if the message is empty
         if (!message.content && !message.files) {
-            await interaction.reply({ content: 'You must provide some input!', ephemeral: true });
+            await interaction.editReply({ content: 'You must provide some input!' });
             return;
         }
 
