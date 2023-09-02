@@ -69,7 +69,8 @@ module.exports = {
             return;
         }
 
-        const sentMessage = await interaction.channel.send(message)
+        // send the message while disabling mentions
+        const sentMessage = await interaction.channel.send({ ...message, allowedMentions: { parse: [] } });
 
         // save the message to the database
         if (!IGNORED_IDs.includes(interaction.user.id))
