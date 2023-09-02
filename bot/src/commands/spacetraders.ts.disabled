@@ -1,0 +1,49 @@
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { ChatInputCommandInteraction, Message, APIApplicationCommandOptionChoice } from 'discord.js';
+
+// fetch https://api.spacetraders.io/v2/factions for the json list of factions
+// for each faction, add a choice to the command
+
+let choises = []
+const factions = await fetch("https://api.spacetraders.io/v2/factions").then(res => res.json());
+let choises = [];
+
+for (c
+        choises.push(choice);
+
+    }
+}
+
+
+let data = new SlashCommandBuilder()
+    .setName('spacetraders')
+    .setDescription('Play SpaceTraders')
+    .addSubcommand(subcommand =>
+        subcommand.setName('register')
+            .setDescription('Register for SpaceTraders')
+            .addStringOption(option => {
+                option.setName('symbol')
+                    .setDescription('Your symbol (username)')
+                    .setRequired(true)
+                    .setMaxLength(14)
+                    .setMinLength(3)
+                for (const choice of choises) {
+                    const cur_choice = {
+                        "name": choice.name, "value": choice.value
+                    }
+                    option.addChoices(cur_choice)
+                }
+                return option;
+            })
+    )
+
+
+
+
+module.exports = {
+    global: false,
+    data: data,
+    async execute(interaction: ChatInputCommandInteraction) {
+
+    }
+};
