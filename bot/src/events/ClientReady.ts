@@ -1,4 +1,4 @@
-import { ActivityType, Events } from 'discord.js';
+import { ActivitiesOptions, ActivityType, Events } from 'discord.js';
 import { CustomClient } from '..';
 
 
@@ -14,12 +14,12 @@ async function getShardString(client: CustomClient): Promise<string> {
 
 module.exports = {
     name: Events.ClientReady,
-    async execute(client) {
+    async execute(client: CustomClient) {
 
-        const activities = [
+        const activities: ActivitiesOptions[] = [
             {
                 name: 'you',
-                type: ActivityType.Watching,
+                type: ActivityType.Watching
             },
             {
                 name: `over ${client.guilds.cache.size} servers`,
@@ -42,9 +42,14 @@ module.exports = {
             index = (index + 1) % activities.length;
         }, 60000);
 
+        let total = 0;
         client.guilds.cache.forEach((guild) => {
             console.log(guild.name + " - " + guild.id);
-        }
-        );
+            // get member count of guild
+            total += guild.memberCount;
+        });
+        console.log("Total members: " + total);
     }
-};
+
+}
+//
