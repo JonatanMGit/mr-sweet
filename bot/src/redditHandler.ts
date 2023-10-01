@@ -6,14 +6,25 @@ export async function getImagesFromPost(postURL: String): Promise<String[] | und
             console.log("not a reddit post");
             return undefined;
         }
-        const response = await fetch(postURL + ".json", {
-            method: 'GET',
+
+        const redirect = await fetch(postURL.toString(), {
+            method: 'HEAD',
             headers: {
                 'User-Agent': 'Mr Sweet',
             }
         });
-        // console.log(response.url);
 
+        // console.log(redirect.url);
+
+        const url = new URL(redirect.url);
+
+        // strip the parameters from the url
+        const response = await fetch(url.origin + url.pathname + ".json", {
+            method: 'get',
+            headers: {
+                'User-Agent': 'Mr Sweet',
+            }
+        });
 
         let json = await response.json()
 
