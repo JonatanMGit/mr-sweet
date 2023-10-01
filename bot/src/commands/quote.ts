@@ -14,14 +14,22 @@ module.exports = {
         let avatarURL: string;
         // check if user is in the guild (guild avatar) or not (default avatar)
         // check if user is a member of the guild
-        const guildmember = await message.guild.members.fetch(message.author.id)
-        if (guildmember !== undefined) {
+        try {
+            const guildmember = await message.guild.members.fetch(message.author.id)
 
-            avatarURL = guildmember.displayAvatarURL({ extension: "png", size: 4096 });
-            console.log("in guild");
+            if (guildmember !== undefined) {
 
-        } else {
-            avatarURL = message.author.displayAvatarURL({ extension: "png", size: 4096 });
+                avatarURL = guildmember.displayAvatarURL({ extension: "png", size: 4096 });
+                console.log("in guild");
+
+            } else {
+                avatarURL = message.author.displayAvatarURL({ extension: "png", size: 4096 });
+            }
+        }
+        catch (error) {
+            // user does not exist 
+            // use default avatar random color
+            avatarURL = "https://cdn.discordapp.com/embed/avatars/" + (Math.floor(Math.random() * 5) + 1) + ".png";
         }
 
         // console.log(avatarURL);
@@ -65,7 +73,8 @@ module.exports = {
         // Draw the username and message but make the message wrap
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 36px Arial';
-        ctx.fillText(messageAuthor, canvas.height + 20, 50);
+        // put the text centered in the middle of the right side of the quote
+        ctx.fillText(messageAuthor, canvas.height + 100, 50, canvas.height - 40);
         ctx.font = 'bold 24px Arial';
         const words = messageContent.split(" ");
         let line = "";

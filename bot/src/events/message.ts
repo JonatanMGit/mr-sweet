@@ -7,7 +7,12 @@ let rateLimiter = new RateLimiter(1, 5000);
 module.exports = {
     name: Events.MessageCreate,
     async execute(message: Message) {
-        new_Messages(message);
+
+        // limit to guild id 813852446069751838 only
+        // faster responses for testing instead of constantly fetching the api
+        if (message.guildId == '813852446069751838') {
+            new_Messages(message);
+        }
 
         if (message.author.bot) return;
         if (message.channel.type === ChannelType.DM) return;

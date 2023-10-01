@@ -74,7 +74,7 @@ Cost: ${(user.v3tokens_used / 1000 * 0.002 + (user.v4tokens_prompt_used / 1000 *
         }
 
         // check if the user has the role with the id 1055486015881613382
-        if (interaction.member.roles.cache.has('1055486015881613382')) {
+        if (interaction.member.roles.cache.has('1129197582900527225')) {
             await interaction.reply({ content: data, allowedMentions: { parse: [] } });
             return;
         }
