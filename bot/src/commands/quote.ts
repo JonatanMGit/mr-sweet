@@ -34,11 +34,6 @@ module.exports = {
         const canvas = createCanvas(1200, 630);
         const ctx = canvas.getContext("2d");
 
-        // Draw the avatar with the fade effect
-        const gradient = ctx.createLinearGradient(0, 0, canvas.height, canvas.height);
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-        gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-
         // black background
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -48,21 +43,45 @@ module.exports = {
 
         ctx.drawImage(avatar, 0, 0, canvas.height, canvas.height);
         // draw the gradient over the avatar
+        // it should be a gradient from transparent to black (left to right darkening) at a 45 degree angle
+        const gradient = ctx.createLinearGradient(0, 0, canvas.height, canvas.height);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(0.95, 'rgba(0, 0, 0, 1)');
         ctx.fillStyle = gradient;
-        // rotate the gradient 75 degrees
-        ctx.rotate(75 * Math.PI / 180);
-        // draw the gradient over the avatar starting from the top middle
-        ctx.fillRect(0, -canvas.height * 1.5, canvas.height * 2, canvas.height);
+        ctx.fillRect(0, 0, canvas.height, canvas.height);
 
         ctx.restore();
 
 
         // Draw the username and message
+        /*
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 36px Arial';
         ctx.fillText(messageAuthor, canvas.height + 20, 50);
         ctx.font = 'bold 24px Arial';
         ctx.fillText(messageContent, canvas.height + 20, 100);
+        */
+
+        // Draw the username and message but make the message wrap
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Arial';
+        ctx.fillText(messageAuthor, canvas.height + 20, 50);
+        ctx.font = 'bold 24px Arial';
+        const words = messageContent.split(" ");
+        let line = "";
+        let lineCount = 0;
+        for (const word of words) {
+            if (ctx.measureText(line + word).width > canvas.width - canvas.height - 20) {
+                ctx.fillText(line, canvas.height + 20, 100 + 50 * lineCount);
+                line = word + " ";
+                lineCount++;
+            } else {
+                line += word + " ";
+            }
+        }
+        ctx.fillText(line, canvas.height + 20, 100 + 50 * lineCount);
+
+
 
 
         // send the image
