@@ -21,7 +21,7 @@ module.exports = {
                 interaction.deleteReply();
             }
             else {
-                interaction.targetMessage.reply("No authour found! It could be the real Mr Sweet!");
+                interaction.targetMessage.reply("No author found! It could be the real Mr Sweet!");
                 interaction.deferReply({ ephemeral: true });
                 interaction.deleteReply();
             }
