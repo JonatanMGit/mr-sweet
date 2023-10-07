@@ -123,7 +123,7 @@ module.exports = {
                 count_tokens(messagesToChatCompletionRequestMessage(message), interaction.user.id, model);
             });
         } catch (e) {
-            interaction.editReply("Mr Sweet is currnetly lacking your credit card information. Please use the Free Model or consider supporting Mr Sweet :)");
+            interaction.editReply("I currently don't have acces to the AI model. The Robmanians used all of the credits. Please try again in 1 year.");
         }
     },
 };
