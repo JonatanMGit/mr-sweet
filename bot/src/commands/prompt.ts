@@ -20,7 +20,7 @@ if (process.env.LOCAL_GPT === 'true') {
 
 
 module.exports = {
-    global: true,
+    global: false,
     data: data,
     async execute(interaction: ChatInputCommandInteraction) {
         let limited = rateLimiter.take(interaction.user.id);
