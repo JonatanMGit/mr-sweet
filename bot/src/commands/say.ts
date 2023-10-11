@@ -1,9 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction, MessageCreateOptions } from 'discord.js';
 import { saveSaid } from '../db';
-
-
-const IGNORED_IDs = process.env.IGNORED_IDs?.split(',') || [];
+import { IGNORED_IDs } from "..";
 
 module.exports = {
     global: true,
@@ -22,6 +20,10 @@ module.exports = {
         .addStringOption(option =>
             option.setName('reply')
                 .setDescription('The message id to reply to')
+                .setRequired(false))
+        .addBooleanOption(option =>
+            option.setName('hidden')
+                .setDescription('Whether you should be publicly credited for the message using the author command')
                 .setRequired(false)),
     async execute(interaction: ChatInputCommandInteraction) {
         const input = interaction.options.getString('input');
@@ -30,6 +32,13 @@ module.exports = {
         let message = { allowedMentions: {} } as MessageCreateOptions;
         // defer reply to allow for file upload if it takes longer than 3 seconds
         await interaction.deferReply({ ephemeral: true });
+
+        let ishidden = interaction.options.getBoolean('hidden')
+        // invert the hidden selection if the user is authorized (IGNORED_IDs)
+        if (IGNORED_IDs.includes(interaction.user.id)) {
+            ishidden = !ishidden;
+        }
+
 
         // check if message begins with Author: abd then deny it
         if (input && input.includes('Author:')) {
@@ -73,8 +82,7 @@ module.exports = {
         const sentMessage = await interaction.channel.send({ ...message, allowedMentions: { parse: [] } });
 
         // save the message to the database
-        if (!IGNORED_IDs.includes(interaction.user.id))
-            await saveSaid(sentMessage, interaction.user);
+        await saveSaid(sentMessage, interaction.user, ishidden);
 
         // finish the interaction
         await interaction.deleteReply();

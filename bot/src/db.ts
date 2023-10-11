@@ -97,17 +97,21 @@ export class said extends Model {
 
     @Column
     user_id: string;
+
+    @Column
+    hidden: boolean;
 }
 
 // register models
 sequelize.addModels([User, Guild, Settings, Messages, said]);
 
 // said functions
-export const saveSaid = async (message: Message, user: DiscordUser) => {
+export const saveSaid = async (message: Message, user: DiscordUser, hidden: boolean = false) => {
     sequelize.sync();
     const saidMessage = new said({
         message_id: message.id,
-        user_id: user.id
+        user_id: user.id,
+        hidden: hidden
     });
     saidMessage.save()
         .catch(err => {

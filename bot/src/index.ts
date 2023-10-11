@@ -3,6 +3,7 @@ require('dotenv').config();
 import { prepareGlobalCommands, loadCommands, registerCommands } from './commandUtils';
 import handleEvents from './eventHandler';
 
+export const IGNORED_IDs = process.env.IGNORED_IDs?.split(',') || [];
 export interface CustomClient extends Client {
     commands: Collection<string, any>
 }
