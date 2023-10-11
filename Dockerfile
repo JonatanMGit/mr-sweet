@@ -11,7 +11,6 @@ RUN apk add --update --no-cache \
     cairo-dev \
     giflib-dev \
     pango-dev \
-
     libtool \
     autoconf \
     automake \
@@ -32,6 +31,7 @@ RUN apk add --update --no-cache \
     cairo \
     pango \
     jpeg \
-    giflib
+    giflib \
+    font-liberation 
 COPY --from=build /app/ .
 CMD [ "npm", "run", "start:bot" ]
