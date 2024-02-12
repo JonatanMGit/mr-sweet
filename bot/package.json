@@ -39,7 +39,7 @@
     "gtts": "^0.2.1",
     "js-markov": "^3.0.3",
     "noblox.js": "^4.14.1",
-    "openai": "^3.2.1"
+    "openai": "^4.27.0"
   },
   "devDependencies": {
     "@trongnd/ts-nodemon": "^1.0.0",
